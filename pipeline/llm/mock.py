@@ -418,12 +418,41 @@ UI_MOCK: dict[str, Any] = {
     ],
 }
 
+# Ответы для codegen-этапов: каркас строится детерминированно,
+# поэтому LLM-часть минимальна (на случай, если агент ждёт файлов от LLM).
+CODEGEN_BACKEND_MOCK: dict[str, Any] = {
+    "summary": "Детерминированный каркас backend из OpenAPI",
+    "files": [
+        {
+            "path": "Services/SessionService.cs",
+            "content": (
+                "namespace Generated.Api.Services;\n\n"
+                "/// <summary>Сервис сессий (заглушка, заменяется генератором).</summary>\n"
+                "public static class SessionService\n{\n"
+                "    public static string Describe() => \"SessionService\";\n}\n"
+            ),
+        }
+    ],
+}
+
+CODEGEN_FRONTEND_MOCK: dict[str, Any] = {
+    "summary": "Детерминированный каркас frontend из ui-spec",
+    "files": [
+        {
+            "path": "screens/SCR_999/README.md",
+            "content": "# Экран-заглушка\n\nДополнительные экраны генерируются из ui-spec.json.\n",
+        }
+    ],
+}
+
 # Реестр предзаданных ответов по имени этапа.
 DEFAULT_MOCK_RESPONSES: dict[str, dict[str, Any]] = {
     "01_requirements": REQUIREMENTS_MOCK,
     "02_system_analysis": SYSTEM_ANALYSIS_MOCK,
     "03_architecture_api": ARCHITECTURE_MOCK,
     "04_ui_design": UI_MOCK,
+    "05_codegen_backend": CODEGEN_BACKEND_MOCK,
+    "06_codegen_frontend": CODEGEN_FRONTEND_MOCK,
 }
 
 

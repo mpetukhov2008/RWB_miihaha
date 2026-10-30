@@ -14,6 +14,8 @@ from typing import Any
 
 from pipeline.agents.architecture_api import ArchitectureApiAgent
 from pipeline.agents.base import AgentResult, BaseAgent
+from pipeline.agents.codegen_backend import CodegenBackendAgent
+from pipeline.agents.codegen_frontend import CodegenFrontendAgent
 from pipeline.agents.requirements import RequirementsAgent
 from pipeline.agents.system_analysis import SystemAnalysisAgent
 from pipeline.agents.ui import UiDesignAgent
@@ -30,6 +32,8 @@ STAGES: list[tuple[str, type[BaseAgent]]] = [
     ("02_system_analysis", SystemAnalysisAgent),
     ("03_architecture_api", ArchitectureApiAgent),
     ("04_ui_design", UiDesignAgent),
+    ("05_codegen_backend", CodegenBackendAgent),
+    ("06_codegen_frontend", CodegenFrontendAgent),
 ]
 
 
@@ -70,14 +74,23 @@ def _build_inputs(run_dir: Path, initial: dict[str, Any]) -> dict[str, Any]:
     sm = _read_json(run_dir / "02_system_analysis" / "system-model.json")
     if sm:
         inputs["system_analysis"] = sm
-    arch = _read_json(run_dir / "03_architecture_api" / "data-model.json")
-    if arch:
-        inputs["architecture"] = arch
-    # Полный architecture dict (с operations) берём из openapi? Нет:
-    # operations хранятся в data-model?.. Храним отдельно в architecture.json.
     arch_full = _read_json(run_dir / "03_architecture_api" / "architecture.json")
     if arch_full:
         inputs["architecture"] = arch_full
+    # OpenAPI (для codegen backend).
+    import yaml
+
+    openapi_path = run_dir / "03_architecture_api" / "openapi.yaml"
+    if openapi_path.exists():
+        try:
+            inputs["openapi"] = yaml.safe_load(openapi_path.read_text(encoding="utf-8")) or {}
+        except Exception:  # noqa: BLE001
+            inputs["openapi"] = {}
+    # ui-spec (для codegen frontend).
+    ui_path = run_dir / "04_ui_design" / "ui-spec.json"
+    ui = _read_json(ui_path)
+    if ui:
+        inputs["ui_spec"] = ui
     return inputs
 
 
