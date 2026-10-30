@@ -12,7 +12,7 @@ from typing import Any
 import yaml
 
 from pipeline.agents.base import AgentResult, BaseAgent
-from pipeline.schemas.architecture import ApiOperation, ArchitectureApi
+from pipeline.schemas.architecture import ArchitectureApi
 
 
 class ArchitectureApiAgent(BaseAgent[ArchitectureApi]):

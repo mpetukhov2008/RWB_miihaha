@@ -10,8 +10,6 @@ from __future__ import annotations
 import json
 from typing import Any
 
-import yaml
-
 from pipeline.agents.base import AgentResult, BaseAgent
 from pipeline.generators.backend import build_backend_skeleton
 

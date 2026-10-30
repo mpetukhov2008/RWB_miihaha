@@ -15,7 +15,7 @@ from typing import Any, Generic, TypeVar
 from pydantic import BaseModel, ValidationError
 
 from pipeline.agents.prompts import load_prompt
-from pipeline.errors import LLMUnavailable, ValidationFailed
+from pipeline.errors import ValidationFailed
 
 TArtifact = TypeVar("TArtifact", bound=BaseModel | dict[str, Any])
 
