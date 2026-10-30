@@ -1,0 +1,54 @@
+{
+  "goals": ["Дать водителю быстро начать и завершить парковочную сессию"],
+  "roles": [
+    {"id": "R-01", "name": "Водитель", "description": "Оплачивает парковку"},
+    {"id": "R-02", "name": "Администратор", "description": "Управляет зонами"}
+  ],
+  "requirements": [
+    {
+      "id": "FR-001",
+      "type": "FR",
+      "title": "Определение платной зоны",
+      "description": "Приложение определяет платную зону по геолокации",
+      "priority": "must",
+      "source": "customer",
+      "acceptance_criteria": ["Показывается название зоны и тариф"],
+      "depends_on": []
+    },
+    {
+      "id": "FR-002",
+      "type": "FR",
+      "title": "Активная сессия",
+      "description": "Водитель может начать и завершить сессию",
+      "priority": "must",
+      "source": "customer",
+      "acceptance_criteria": ["Сессия фиксирует время начала и окончания"],
+      "depends_on": ["FR-001"]
+    },
+    {
+      "id": "NFR-001",
+      "type": "NFR",
+      "title": "Время отклика",
+      "description": "API отвечает не дольше 300 мс",
+      "priority": "should",
+      "source": "customer",
+      "acceptance_criteria": [],
+      "depends_on": []
+    }
+  ],
+  "constraints": ["MVP без реальной оплаты"],
+  "risks": [
+    {"id": "RK-01", "text": "Геолокация неточна", "impact": "Неверная зона"}
+  ],
+  "assumptions": ["Водитель даёт согласие на геолокацию"],
+  "open_questions": [
+    {
+      "id": "Q-001",
+      "text": "Какая версия Angular?",
+      "severity": "blocking",
+      "impact": "architecture",
+      "options": ["17", "18", "20.1.6"],
+      "default_if_unanswered": "20.1.6"
+    }
+  ]
+}
