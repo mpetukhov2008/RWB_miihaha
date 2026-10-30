@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RequirementsDoc",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["goals", "roles", "requirements", "constraints", "risks", "assumptions", "open_questions"],
+  "properties": {
+    "goals": { "type": "array", "items": { "type": "string" } },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^R-\\d{2,}$" },
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "title", "description", "priority", "source", "acceptance_criteria"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^(FR|NFR)-\\d{3,}$" },
+          "type": { "enum": ["FR", "NFR"] },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "priority": { "enum": ["must", "should", "could"] },
+          "source": { "enum": ["customer", "assumption"] },
+          "acceptance_criteria": { "type": "array", "items": { "type": "string" } },
+          "depends_on": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "constraints": { "type": "array", "items": { "type": "string" } },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "text"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^RK-\\d{2,}$" },
+          "text": { "type": "string" },
+          "impact": { "type": "string" }
+        }
+      }
+    },
+    "assumptions": { "type": "array", "items": { "type": "string" } },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "text", "severity", "impact"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^Q-\\d{3,}$" },
+          "text": { "type": "string" },
+          "severity": { "enum": ["blocking", "important", "minor"] },
+          "impact": { "enum": ["architecture", "security", "ux", "other"] },
+          "options": { "type": "array", "items": { "type": "string" } },
+          "default_if_unanswered": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}
