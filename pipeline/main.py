@@ -108,3 +108,7 @@ def run(
         raise typer.Exit(code=2)
 
     typer.echo(f"Пайплайн завершён. Результат: {out_dir}")
+
+
+if __name__ == "__main__":
+    sys.exit(app())
