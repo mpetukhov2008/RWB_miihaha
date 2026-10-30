@@ -1,8 +1,8 @@
 """CLI пайплайна на typer.
 
-Команда ``pipeline run`` создаёт директорию прогона ``runs/{run_id}/``,
-читает бизнес-требования (и, опционально, ответы на blocking-вопросы)
-и запускает оркестратор по этапам.
+Команда ``pipeline run`` создаёт результат в ``generated/<case>/``
+(или ``runs/{run_id}/``, если передан ``--run-id``), читает бизнес-требования
+(и, опционально, ответы на blocking-вопросы) и запускает оркестратор по этапам.
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ from pathlib import Path
 import typer
 
 from pipeline import __version__
-from pipeline.config import RUN_ID_FORMAT, RUNS_DIR, Settings, load_env
+from pipeline.config import GENERATED_DIR, RUN_ID_FORMAT, RUNS_DIR, Settings, load_env
 
 app = typer.Typer(
     name="pipeline",
@@ -65,17 +65,24 @@ def run(
     run_id: str = typer.Option(
         "",
         "--run-id",
-        help="Идентификатор прогона; по умолчанию — текущая метка времени",
+        help="Идентификатор прогона; по умолчанию — generated/<кейс>/",
     ),
 ) -> None:
-    """Запустить пайплайн: требования -> системная модель -> UI -> документация.
+    """Запустить пайплайн: требования -> ... -> документация.
 
-    При остановке на blocking-вопросах печатает в stderr путь к ожидаемому
-    ``answers.json`` и завершается с кодом 2.
+    Результат пишется в ``generated/<кейс>/`` (самодостаточный набор
+    артефактов и кода). При остановке на blocking-вопросах печатает в stderr
+    путь к ожидаемому ``answers.json`` и завершается с кодом 2.
     """
+    settings = Settings()
     rid = run_id or datetime.now().strftime(RUN_ID_FORMAT)
-    run_dir = RUNS_DIR / rid
-    run_dir.mkdir(parents=True, exist_ok=True)
+
+    # Определяем директорию прогона: generated/<case>/ по умолчанию.
+    case_name = requirements.parent.name if requirements.parent.name != "." else "default"
+    out_dir = GENERATED_DIR / case_name
+    if run_id:
+        out_dir = RUNS_DIR / run_id
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     requirements_md = requirements.read_text(encoding="utf-8")
     answers_data: dict[str, str] | None = None
@@ -84,24 +91,20 @@ def run(
 
     # Оркестратор подключается намеренно здесь, а не на уровне модуля,
     # чтобы `pipeline --help` работал без установленных зависимостей LLM.
-    from pipeline.pipeline.orchestrator import run_pipeline
+    from pipeline.orchestrator.orchestrator import run_pipeline
 
     result = run_pipeline(
-        run_dir=run_dir,
+        run_dir=out_dir,
         requirements_md=requirements_md,
         answers=answers_data,
-        settings=Settings(),
+        settings=settings,
     )
 
     if result == "waiting_answers":
         typer.echo(
-            f"Ожидание answers.json -> {run_dir / 'answers.json'}",
+            f"Ожидание answers.json -> {out_dir / 'answers.json'}",
             err=True,
         )
         raise typer.Exit(code=2)
 
-    typer.echo(f"Пайплайн завершён. Артефакты: {run_dir}")
-
-
-if __name__ == "__main__":
-    sys.exit(app())
+    typer.echo(f"Пайплайн завершён. Результат: {out_dir}")

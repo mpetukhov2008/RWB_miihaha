@@ -22,7 +22,7 @@ class RequirementsAgent(BaseAgent[RequirementsDoc]):
         prompt_version: ``v1``.
     """
 
-    name = "requirements"
+    name = "01_requirements"
     prompt_version = "v1"
 
     def json_schema(self) -> dict[str, Any]:
