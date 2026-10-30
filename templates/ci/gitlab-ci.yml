@@ -1,0 +1,40 @@
+# Шаблон CI для СГЕНЕРИРОВАННОГО результата (generated/<case>/).
+# Копируется агентом 09 в generated/<case>/.gitlab-ci.yml.
+stages:
+  - build
+  - test
+  - scan
+
+variables:
+  DOTNET_VERSION: "10.0"
+
+build-backend:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  script:
+    - cd backend
+    - dotnet restore
+    - dotnet build --no-restore -c Release
+
+test-backend:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  script:
+    - cd backend
+    - dotnet test --no-build -c Release
+
+build-frontend:
+  stage: build
+  image: node:22-alpine
+  script:
+    - cd frontend-admin
+    - npm install --legacy-peer-deps
+    - npm run build
+
+scan-backend:
+  stage: scan
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  script:
+    - cd backend
+    - dotnet list package --vulnerable --include-transitive
+  allow_failure: true

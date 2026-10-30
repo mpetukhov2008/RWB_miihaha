@@ -1,0 +1,34 @@
+# CI самого пайплайна: lint -> test -> smoke (mock).
+stages:
+  - lint
+  - test
+  - smoke
+
+lint:
+  stage: lint
+  image: python:3.11-slim
+  before_script:
+    - pip install -e ".[dev]"
+  script:
+    - ruff check .
+    - mypy pipeline
+
+test:
+  stage: test
+  image: python:3.11-slim
+  before_script:
+    - pip install -e ".[dev]"
+  script:
+    - pytest -q
+
+smoke:
+  stage: smoke
+  image: python:3.11-slim
+  before_script:
+    - pip install -e ".[dev]"
+  script:
+    - LLM_MODE=mock python -m pipeline.main run --requirements cases/parking/requirements.md --answers cases/parking/answers.json
+  artifacts:
+    paths:
+      - generated/parking/
+    expire_in: 1 week
