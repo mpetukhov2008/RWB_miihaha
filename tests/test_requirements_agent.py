@@ -43,9 +43,7 @@ def test_happy_path(tmp_path: Path) -> None:
     assert result.gates["acceptance_criteria"] == "ok"
     artifact = result.artifacts["requirements.json"]
     assert artifact["requirements"][0]["id"] == "FR-001"
-    # Артефакт сохранён в stage_dir
-    saved = json.loads((tmp_path / "requirements" / "requirements.json").read_text(encoding="utf-8"))
-    assert saved["goals"] == artifact["goals"]
+    # Артефакты пишет на диск оркестратор (фаза 3); агент их возвращает.
 
 
 def test_retry_after_invalid_id(tmp_path: Path) -> None:
