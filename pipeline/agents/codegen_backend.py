@@ -13,6 +13,20 @@ from typing import Any
 from pipeline.agents.base import AgentResult, BaseAgent
 from pipeline.generators.backend import build_backend_skeleton
 
+_CODEGEN_RULES = """
+## Жёсткие правила генерации
+
+1. Содержимое каждого файла — полный, самодостаточный код без обрывов.
+2. Один тип (класс/record/интерфейс) — один файл, путь совпадает с именем типа.
+   Запрещено объявлять один и тот же тип в двух файлах или папках.
+3. Используй ровно те пути и папки, которые есть в списке файлов ниже. Не создавай
+   свои варианты папок с другим регистром или названиями.
+4. Синтаксис C#: имя параметра после типа — `decimal FirstNumber`, не `FirstNumber decimal`.
+5. Не изобретай зависимости, которых нет в ARCHITECTURE.JSON: если там нет базы данных,
+   никаких DbContext/репозиториев/слоёв Data и Common. Хранение — in-memory.
+6. Все классы — в едином namespace по архитектуре; using только на существующие namespace.
+"""
+
 
 class CodegenBackendAgent(BaseAgent[dict[str, Any]]):
     """Агент генерации backend.
@@ -54,6 +68,7 @@ class CodegenBackendAgent(BaseAgent[dict[str, Any]]):
         schema = json.dumps(self.json_schema(), ensure_ascii=False, indent=2)
         return (
             "Ниже — OpenAPI и архитектура. Сгенерируй backend-файлы.\n\n"
+            f"{_CODEGEN_RULES}\n"
             f"=== OPENAPI.YAML ===\n{json.dumps(openapi, ensure_ascii=False, indent=2)}\n\n"
             f"=== ARCHITECTURE.JSON ===\n{json.dumps(arch, ensure_ascii=False, indent=2)}\n\n"
             f"=== JSON SCHEMA ОТВЕТА ===\n{schema}\n"
@@ -69,10 +84,6 @@ class CodegenBackendAgent(BaseAgent[dict[str, Any]]):
         Returns:
             AgentResult с файлами backend как артефактами.
         """
-        llm_files: dict[str, str] = {}
-        for f in data.get("files") or []:
-            llm_files[f["path"]] = f["content"]
-
         # Детерминированный каркас (всегда).
         openapi = inputs.get("openapi") or {}
         arch = inputs.get("architecture") or {}
@@ -80,8 +91,17 @@ class CodegenBackendAgent(BaseAgent[dict[str, Any]]):
         entities = arch.get("entities") or []
         skeleton = build_backend_skeleton(openapi, ops, entities)
 
-        # Слияние: каркас — основа, LLM-файлы перекрывают (сервисы и т.п.).
-        files = {**skeleton, **llm_files}
+        # Слияние с нормализацией регистра: один тип — один файл.
+        files: dict[str, str] = {}
+        skeleton_by_norm = {p.lower(): p for p in skeleton}
+        for f in data.get("files") or []:
+            norm = f["path"].lower()
+            if norm in skeleton_by_norm:
+                files[skeleton_by_norm[norm]] = f["content"]  # перекрыть каркас
+            else:
+                files[f["path"]] = f["content"]
+        for path, content in skeleton.items():
+            files.setdefault(path, content)
 
         artifacts: dict[str, Any] = {}
         for path, content in files.items():
