@@ -33,7 +33,7 @@ RUN_TRACE_DIRNAME = "traceability"
 # Количество попыток вызова LLM (retry) при ошибках сети/таймаута.
 LLM_NETWORK_RETRIES = 2
 # Таймаут одного вызова LLM, секунд.
-LLM_TIMEOUT_SEC = 120
+LLM_TIMEOUT_SEC = 600
 
 # Формат метки времени по умолчанию для run_id.
 RUN_ID_FORMAT = "%Y%m%d-%H%M%S"
