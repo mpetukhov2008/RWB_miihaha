@@ -9,13 +9,12 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import datetime
 from pathlib import Path
 
 import typer
 
 from pipeline import __version__
-from pipeline.config import GENERATED_DIR, RUN_ID_FORMAT, RUNS_DIR, Settings, load_env
+from pipeline.config import GENERATED_DIR, RUNS_DIR, Settings, load_env
 
 app = typer.Typer(
     name="pipeline",
@@ -75,7 +74,6 @@ def run(
     путь к ожидаемому ``answers.json`` и завершается с кодом 2.
     """
     settings = Settings()
-    rid = run_id or datetime.now().strftime(RUN_ID_FORMAT)
 
     # Определяем директорию прогона: generated/<case>/ по умолчанию.
     case_name = requirements.parent.name if requirements.parent.name != "." else "default"

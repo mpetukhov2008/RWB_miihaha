@@ -26,7 +26,7 @@ def _response(content: str) -> SimpleNamespace:
 class _FakeCompletions:
     """Поддельный chat.completions с заданным поведением."""
 
-    def __init__(self, parent: "_FakeOpenAI") -> None:
+    def __init__(self, parent: _FakeOpenAI) -> None:
         self._parent = parent
 
     def create(self, **kwargs: object) -> object:
@@ -93,7 +93,7 @@ def test_network_retry_then_success(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     calls = {"n": 0}
 
     class FlakyCompletions:
-        def __init__(self, parent: "Flaky") -> None:
+        def __init__(self, parent: Flaky) -> None:
             self._parent = parent
 
         def create(self, **kwargs: object) -> object:

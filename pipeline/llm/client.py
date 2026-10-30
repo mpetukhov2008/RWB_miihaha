@@ -259,7 +259,9 @@ class LLMClient:
             Предзаданный JSON-ответ.
         """
         assert isinstance(self._client, MockBackend)
-        return self._client.complete(stage, self.settings.llm_model, system_prompt, user_prompt, json_schema)
+        return self._client.complete(
+            stage, self.settings.llm_model, system_prompt, user_prompt, json_schema
+        )
 
     def _call(
         self,

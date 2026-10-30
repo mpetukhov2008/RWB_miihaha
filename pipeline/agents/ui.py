@@ -11,7 +11,6 @@ import json
 from typing import Any
 
 from pipeline.agents.base import AgentResult, BaseAgent
-from pipeline.schemas.architecture import ArchitectureApi
 from pipeline.schemas.ui_spec import UiAction, UiScreen, UiSpec
 
 

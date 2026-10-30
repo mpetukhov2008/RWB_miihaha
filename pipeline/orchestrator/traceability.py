@@ -45,7 +45,7 @@ def build_traceability(run_dir: Path) -> dict[str, dict[str, list[str]]]:
         try:
             openapi = yaml.safe_load(openapi_path.read_text(encoding="utf-8")) or {}
             for path_item in (openapi.get("paths") or {}).values():
-                for method, op in path_item.items():
+                for _method, op in path_item.items():
                     if isinstance(op, dict) and "operationId" in op:
                         api_ops.append(op)
         except Exception:  # noqa: BLE001

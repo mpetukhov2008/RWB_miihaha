@@ -83,8 +83,10 @@ class SystemAnalysisAgent(BaseAgent[SystemAnalysis]):
         """
         lines: list[str] = ["# Системный анализ", ""]
         lines.append("## Границы системы")
-        lines.append("**Внутри:** " + (", ".join(model.boundaries.inside) if model.boundaries.inside else "—"))
-        lines.append("**Снаружи:** " + (", ".join(model.boundaries.outside) if model.boundaries.outside else "—"))
+        inside = ", ".join(model.boundaries.inside) if model.boundaries.inside else "—"
+        outside = ", ".join(model.boundaries.outside) if model.boundaries.outside else "—"
+        lines.append(f"**Внутри:** {inside}")
+        lines.append(f"**Снаружи:** {outside}")
         lines.append("")
         lines.append("## Роли и разрешения")
         for rp in model.roles_permissions:
