@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SystemAnalysis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["boundaries", "roles_permissions", "scenarios", "entities", "assumptions", "open_questions"],
+  "properties": {
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inside", "outside"],
+      "properties": {
+        "inside": { "type": "array", "items": { "type": "string" } },
+        "outside": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "roles_permissions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "permissions"],
+        "properties": {
+          "role": { "type": "string" },
+          "permissions": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "actor", "steps", "result"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^US-\\d{3,}$" },
+          "title": { "type": "string" },
+          "actor": { "type": "string" },
+          "requirement_ids": { "type": "array", "items": { "type": "string" } },
+          "steps": { "type": "array", "items": { "type": "string" } },
+          "result": { "type": "string" }
+        }
+      }
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "description"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "assumptions": { "type": "array", "items": { "type": "string" } },
+    "open_questions": { "type": "array", "items": { "type": "string" } }
+  }
+}
