@@ -14,39 +14,39 @@ from pipeline.errors import LLMUnavailable
 from pipeline.llm.client import LLMClient
 
 
-class _FakeOpenAI:
-    """Поддельный клиент openai.OpenAI с заданным поведением."""
-
-    def __init__(self, response_text: str = "", error: Exception | None = None) -> None:
-        self.response_text = response_text
-        self.error = error
-        self.calls: list[dict] = []
-
-    def chat(self) -> "_FakeChat":
-        return _FakeChat(self)
-
-
-class _FakeChat:
-    def __init__(self, parent: _FakeOpenAI) -> None:
-        self._parent = parent
-
-    def completions(self) -> "_FakeCompletions":
-        return _FakeCompletions(self._parent)
+def _response(content: str) -> SimpleNamespace:
+    """Собрать поддельный ответ OpenAI."""
+    return SimpleNamespace(
+        choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+        usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5),
+        model="fake-model",
+    )
 
 
 class _FakeCompletions:
-    def __init__(self, parent: _FakeOpenAI) -> None:
+    """Поддельный chat.completions с заданным поведением."""
+
+    def __init__(self, parent: "_FakeOpenAI") -> None:
         self._parent = parent
 
     def create(self, **kwargs: object) -> object:
         self._parent.calls.append(kwargs)
         if self._parent.error is not None:
             raise self._parent.error
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=self._parent.response_text))],
-            usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5),
-            model="fake-model",
-        )
+        return _response(self._parent.response_text)
+
+
+class _FakeOpenAI:
+    """Поддельный клиент openai.OpenAI (свойства вместо методов)."""
+
+    def __init__(self, response_text: str = "", error: Exception | None = None) -> None:
+        self.response_text = response_text
+        self.error = error
+        self.calls: list[dict] = []
+
+    @property
+    def chat(self) -> SimpleNamespace:
+        return SimpleNamespace(completions=_FakeCompletions(self))
 
 
 def _make_client(tmp_path: Path, fake: object, monkeypatch: pytest.MonkeyPatch) -> LLMClient:
@@ -89,25 +89,11 @@ def test_strip_markdown_fence(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
 
 
 def test_network_retry_then_success(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Таймаут -> retry -> успех; логи пишутся по каждой попытке."""
+    """Таймаут -> retry -> успех; метрики пишутся."""
     calls = {"n": 0}
 
-    class Flaky:
-        def __init__(self) -> None:
-            self.calls: list[dict] = []
-
-        def chat(self) -> "_FakeChat2":
-            return _FakeChat2(self)
-
-    class _FakeChat2:
-        def __init__(self, parent: Flaky) -> None:
-            self._parent = parent
-
-        def completions(self) -> "_FakeCompletions2":
-            return _FakeCompletions2(self._parent)
-
-    class _FakeCompletions2:
-        def __init__(self, parent: Flaky) -> None:
+    class FlakyCompletions:
+        def __init__(self, parent: "Flaky") -> None:
             self._parent = parent
 
         def create(self, **kwargs: object) -> object:
@@ -115,11 +101,15 @@ def test_network_retry_then_success(tmp_path: Path, monkeypatch: pytest.MonkeyPa
             calls["n"] += 1
             if calls["n"] == 1:
                 raise APITimeoutError("timeout")
-            return SimpleNamespace(
-                choices=[SimpleNamespace(message=SimpleNamespace(content='{"ok": 1}'))],
-                usage=SimpleNamespace(prompt_tokens=3, completion_tokens=2),
-                model="fake-model",
-            )
+            return _response('{"ok": 1}')
+
+    class Flaky:
+        def __init__(self) -> None:
+            self.calls: list[dict] = []
+
+        @property
+        def chat(self) -> SimpleNamespace:
+            return SimpleNamespace(completions=FlakyCompletions(self))
 
     flaky = Flaky()
     client = _make_client(tmp_path, flaky, monkeypatch)

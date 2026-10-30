@@ -41,7 +41,7 @@ def test_happy_path(tmp_path: Path) -> None:
     assert "tests/e2e-tests.json" in result.artifacts
     report = result.artifacts["tests/test-report.md"]
     assert "FR-001" in report
-    assert "Не покрыто: —" in report
+    assert "**Не покрыто:** —" in report
 
 
 def test_must_not_covered_gate_fail(tmp_path: Path) -> None:

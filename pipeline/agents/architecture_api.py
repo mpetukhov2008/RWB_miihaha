@@ -108,6 +108,7 @@ class ArchitectureApiAgent(BaseAgent[ArchitectureApi]):
             ),
             "openapi.yaml": openapi,
             "architecture.md": self._render_architecture(model),
+            "architecture.json": json.loads(model.model_dump_json()),
         }
         return AgentResult(artifacts=artifacts, gates=gates, questions_blocking=0)
 

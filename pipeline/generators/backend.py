@@ -78,10 +78,10 @@ def build_backend_skeleton(
             lines.append(f"    /// <summary>{op.get('summary', '')}</summary>")
             if op.get("auth"):
                 lines.append("    [Authorize]")
-            if route.startswith("/"):
-                lines.append(f'    [{http_attr}("{route[1:]}")]')
+            if route in ("/", ""):
+                lines.append(f"    [{http_attr}]")
             else:
-                lines.append(f"    [{http_attr}(\"{route}\")]")
+                lines.append(f'    [{http_attr}("{route.lstrip("/")}")]')
             lines.append(f"    public IActionResult {method}()")
             lines.append("    {")
             lines.append("        // TODO: бизнес-логика (агент 05/сервисы).")

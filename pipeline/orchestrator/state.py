@@ -21,6 +21,7 @@ class RunState:
 
     def __init__(self, run_dir: Path) -> None:
         self.run_dir = run_dir
+        run_dir.mkdir(parents=True, exist_ok=True)
         self.path = run_dir / "state.json"
         self.data: dict[str, Any] = self._load()
 
