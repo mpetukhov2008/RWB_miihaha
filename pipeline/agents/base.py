@@ -17,7 +17,7 @@ from pydantic import BaseModel, ValidationError
 from pipeline.agents.prompts import load_prompt
 from pipeline.errors import LLMUnavailable, ValidationFailed
 
-TArtifact = TypeVar("TArtifact", bound=BaseModel)
+TArtifact = TypeVar("TArtifact", bound=BaseModel | dict[str, Any])
 
 
 class AgentResult:
@@ -157,7 +157,11 @@ class BaseAgent(ABC, Generic[TArtifact]):
             JSON-совместимый словарь.
         """
         if isinstance(artifact, BaseModel):
-            return json.loads(artifact.model_dump_json())
+            return dict(json.loads(artifact.model_dump_json()))
         if isinstance(artifact, list):
-            return [json.loads(item.model_dump_json()) if isinstance(item, BaseModel) else item for item in artifact]
-        return artifact
+            dumped: list[Any] = [
+                json.loads(item.model_dump_json()) if isinstance(item, BaseModel) else item
+                for item in artifact
+            ]
+            return {"items": dumped}
+        return dict(artifact)

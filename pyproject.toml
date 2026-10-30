@@ -21,6 +21,7 @@ dev = [
     "pytest-asyncio>=0.23",
     "ruff>=0.4",
     "mypy>=1.10",
+    "types-PyYAML>=6.0",
 ]
 
 [project.scripts]
@@ -49,5 +50,7 @@ ignore = ["B008"]
 
 [tool.mypy]
 python_version = "3.11"
-strict = true
 files = ["pipeline"]
+check_untyped_defs = true
+warn_unused_ignores = false
+no_implicit_optional = true

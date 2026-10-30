@@ -30,7 +30,7 @@ from pipeline.orchestrator.state import RunState
 logger = logging.getLogger(__name__)
 
 # Порядок этапов: (имя этапа, класс агента).
-STAGES: list[tuple[str, type[BaseAgent]]] = [
+STAGES: list[tuple[str, type[BaseAgent[Any]]]] = [
     ("01_requirements", RequirementsAgent),
     ("02_system_analysis", SystemAnalysisAgent),
     ("03_architecture_api", ArchitectureApiAgent),
@@ -55,7 +55,8 @@ def _read_json(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        loaded: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+        return loaded
     except (json.JSONDecodeError, OSError):
         return {}
 

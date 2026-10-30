@@ -27,12 +27,18 @@ class RunState:
 
     def _load(self) -> dict[str, Any]:
         """Прочитать state.json; при отсутствии — пустое состояние."""
+        empty: dict[str, Any] = {
+            "run_id": self.run_dir.name,
+            "stages": {},
+            "created_at": self._now(),
+        }
         if not self.path.exists():
-            return {"run_id": self.run_dir.name, "stages": {}, "created_at": self._now()}
+            return empty
         try:
-            return json.loads(self.path.read_text(encoding="utf-8"))
+            loaded: dict[str, Any] = json.loads(self.path.read_text(encoding="utf-8"))
+            return loaded
         except (json.JSONDecodeError, OSError):
-            return {"run_id": self.run_dir.name, "stages": {}, "created_at": self._now()}
+            return empty
 
     @staticmethod
     def _now() -> str:
@@ -56,7 +62,9 @@ class RunState:
             Один из: ``pending``/``running``/``done``/``failed``/
             ``waiting_answers``.
         """
-        return self.data["stages"].get(stage, {}).get("status", "pending")
+        stage_info = self.data["stages"].get(stage, {})
+        status = stage_info.get("status") if isinstance(stage_info, dict) else None
+        return str(status) if status else "pending"
 
     def start_stage(self, stage: str, prompt_version: str) -> None:
         """Отметить этап как выполняющийся.

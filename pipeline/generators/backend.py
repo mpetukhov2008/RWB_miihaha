@@ -20,7 +20,7 @@ _METHOD_ATTR = {
 
 def _pascal(name: str) -> str:
     """Преобразовать строку в PascalCase."""
-    return "".join(part.capitalize() for part in name.replace("-", "_").split("_"))
+    return str("".join(part.capitalize() for part in name.replace("-", "_").split("_")))
 
 
 def _dto_name(schema: dict[str, Any] | None, fallback: str) -> str:

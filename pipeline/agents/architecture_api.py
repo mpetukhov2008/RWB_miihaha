@@ -180,7 +180,7 @@ class ArchitectureApiAgent(BaseAgent[ArchitectureApi]):
                 },
             },
         }
-        return yaml.safe_dump(doc, sort_keys=False, allow_unicode=True)
+        return str(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True))
 
     @staticmethod
     def _render_architecture(model: ArchitectureApi) -> str:

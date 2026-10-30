@@ -120,7 +120,8 @@ class LLMClient:
         if not path.exists():
             return None
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
+            loaded: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+            return loaded
         except (json.JSONDecodeError, OSError):
             logger.warning("Битый кэш: %s", path)
             return None
@@ -258,10 +259,12 @@ class LLMClient:
         Returns:
             Предзаданный JSON-ответ.
         """
-        assert isinstance(self._client, MockBackend)
-        return self._client.complete(
+        client = self._client
+        assert isinstance(client, MockBackend)
+        result: dict[str, Any] = client.complete(
             stage, self.settings.llm_model, system_prompt, user_prompt, json_schema
         )
+        return result
 
     def _call(
         self,
@@ -292,7 +295,9 @@ class LLMClient:
         # Qwen-эндпоинты его поддерживают); схема передаётся модели
         # внутри user-промпта агентом в build_user_prompt.
 
-        response = self._client.chat.completions.create(**kwargs)
+        openai_client = self._client
+        assert not isinstance(openai_client, MockBackend)
+        response = openai_client.chat.completions.create(**kwargs)
         content = response.choices[0].message.content or ""
         usage = response.usage
         return _OpenAIResponse(
