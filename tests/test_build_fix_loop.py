@@ -12,6 +12,12 @@ Program.cs(14,25): error CS0246: The type or namespace name 'Foo' could not be f
 1 Error(s)
 """
 
+LOG_A = """\
+  Determining projects to restore...
+a.cs(14,25): error CS0246: The type or namespace name 'Foo' could not be found
+1 Error(s)
+"""
+
 
 def test_parse_compiler_errors_extracts_errors_only() -> None:
     errors = parse_compiler_errors(LOG)
@@ -40,7 +46,7 @@ def test_loop_success_on_first_build() -> None:
 def test_loop_fixes_single_file_and_passes() -> None:
     def build(files: dict[str, str]) -> tuple[bool, str]:
         if "error" in files["a.cs"]:
-            return False, LOG
+            return False, LOG_A
         return True, "Build succeeded"
 
     def fixer(path: str, content: str, error: CompilerError) -> tuple[str, int, int]:
@@ -78,14 +84,15 @@ def test_loop_stops_after_max_attempts() -> None:
 def test_loop_accumulates_tokens_across_attempts() -> None:
     logs = iter(
         [
-            LOG,
+            "Program.cs(1,1): error CS1002: ; expected",
             "Other.cs(3,1): error CS1002: ; expected",
             "Build succeeded. 0 Error(s)",
         ]
     )
 
     def build(files: dict[str, str]) -> tuple[bool, str]:
-        return "error" not in files, next(logs)
+        log = next(logs)
+        return "error " not in log, log
 
     def fixer(path: str, content: str, error: CompilerError) -> tuple[str, int, int]:
         return content + "// fixed", 7, 3
