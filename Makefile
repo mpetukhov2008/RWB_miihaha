@@ -14,9 +14,9 @@ lint:
 	$(PYTHON) -m mypy pipeline
 
 run-case1:
-	LLM_MODE=mock $(PYTHON) -m pipeline.main run --requirements examples/case1.md
+	LLM_MODE=mock $(PYTHON) -m pipeline.main run --requirements cases/parking/requirements.md
 
 clean:
-	rm -rf runs/ .pytest_cache/ .mypy_cache/ .ruff_cache/
+	rm -rf runs/ generated/* .pytest_cache/ .mypy_cache/ .ruff_cache/
 	find . -name "__pycache__" -type d -exec rm -rf {} +
 	find . -name "*.pyc" -delete
