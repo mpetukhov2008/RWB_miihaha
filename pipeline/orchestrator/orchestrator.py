@@ -17,13 +17,13 @@ from pipeline.agents.requirements import RequirementsAgent
 from pipeline.config import Settings
 from pipeline.errors import StageFailed
 from pipeline.llm.client import LLMClient
-from pipeline.pipeline.state import RunState
+from pipeline.orchestrator.state import RunState
 
 logger = logging.getLogger(__name__)
 
 # Порядок этапов: (имя, класс агента).
 STAGES: list[tuple[str, type[BaseAgent]]] = [
-    ("requirements", RequirementsAgent),
+    ("01_requirements", RequirementsAgent),
 ]
 
 
@@ -31,7 +31,7 @@ def _persist_artifacts(stage_dir: Path, artifacts: dict[str, Any]) -> None:
     """Записать артефакты этапа на диск.
 
     Args:
-        stage_dir: Директория этапа (``runs/{id}/{stage}/``).
+        stage_dir: Директория этапа (``generated/<case>/{stage}/``).
         artifacts: Словарь «имя файла -> содержимое».
     """
     stage_dir.mkdir(parents=True, exist_ok=True)

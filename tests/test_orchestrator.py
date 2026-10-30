@@ -10,8 +10,8 @@ import pytest
 from pipeline.agents.base import AgentResult
 from pipeline.config import Settings
 from pipeline.errors import StageFailed
-from pipeline.pipeline import orchestrator
-from pipeline.pipeline.state import RunState
+from pipeline.orchestrator import orchestrator
+from pipeline.orchestrator.state import RunState
 
 
 class FakeAgentA:
