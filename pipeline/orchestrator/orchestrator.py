@@ -173,4 +173,11 @@ def run_pipeline(
         _persist_artifacts(run_dir / stage_name, result.artifacts)
         state.finish_stage(stage_name, result.gates)
 
+    # Финальные отчёты: usage (токены/время) и трассируемость.
+    from pipeline.orchestrator.metrics import write_usage_report
+    from pipeline.orchestrator.traceability import write_traceability
+
+    write_usage_report(run_dir)
+    write_traceability(run_dir)
+
     return "done"
