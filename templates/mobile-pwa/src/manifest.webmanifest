@@ -1,0 +1,9 @@
+{
+  "name": "Generated Mobile Client",
+  "short_name": "Mobile",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1976d2",
+  "theme_color": "#1976d2",
+  "icons": []
+}
