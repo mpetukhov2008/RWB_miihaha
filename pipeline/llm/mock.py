@@ -163,9 +163,267 @@ REQUIREMENTS_MOCK: dict[str, Any] = {
     ],
 }
 
+# Ответ System Analysis-агента для демо-кейса.
+SYSTEM_ANALYSIS_MOCK: dict[str, Any] = {
+    "boundaries": {
+        "inside": ["Управление сессиями", "Зоны и тарифы", "Уведомления", "Mock-оплата"],
+        "outside": ["Геолокация устройства", "Планировщик уведомлений"],
+    },
+    "roles_permissions": [
+        {"role": "Водитель", "permissions": ["Начать сессию", "Завершить сессию", "Смотреть историю"]},
+        {"role": "Администратор", "permissions": ["Управлять зонами", "Управлять тарифами", "Смотреть сессии"]},
+    ],
+    "scenarios": [
+        {
+            "id": "US-001",
+            "title": "Начало парковочной сессии",
+            "actor": "Водитель",
+            "requirement_ids": ["FR-001", "FR-002", "FR-005"],
+            "steps": [
+                "Водитель открывает приложение в платной зоне",
+                "Система определяет зону и тариф",
+                "Водитель нажимает «Начать сессию»",
+                "Система создаёт сессию и платёж pending",
+            ],
+            "result": "Сессия активна, виден таймер и стоимость",
+        },
+        {
+            "id": "US-002",
+            "title": "Завершение сессии",
+            "actor": "Водитель",
+            "requirement_ids": ["FR-002", "FR-005"],
+            "steps": [
+                "Водитель нажимает «Завершить»",
+                "Система фиксирует время окончания",
+                "Платёж переводится в paid",
+            ],
+            "result": "Сессия завершена, итоговая стоимость показана",
+        },
+        {
+            "id": "US-003",
+            "title": "Просмотр истории",
+            "actor": "Водитель",
+            "requirement_ids": ["FR-004"],
+            "steps": ["Водитель открывает «Историю»", "Система показывает список сессий"],
+            "result": "История отсортирована по дате",
+        },
+        {
+            "id": "US-004",
+            "title": "Управление зонами",
+            "actor": "Администратор",
+            "requirement_ids": ["FR-006", "NFR-002"],
+            "steps": [
+                "Админ открывает панель",
+                "Создаёт/редактирует зону и тариф",
+                "Система проверяет права администратора",
+            ],
+            "result": "Зона сохранена, доступна водителям",
+        },
+    ],
+    "entities": [
+        {"name": "ParkingZone", "description": "Платная зона с тарифом"},
+        {"name": "Session", "description": "Парковочная сессия водителя"},
+        {"name": "Payment", "description": "Mock-платёж сессии"},
+        {"name": "Notification", "description": "Уведомление водителю"},
+    ],
+    "assumptions": [
+        "Одна активная сессия на водителя",
+        "Тарифы задаются админом вручную",
+        "Версия Angular зафиксирована как 20.1.6 (ответ на Q-001)",
+    ],
+    "open_questions": ["Поддержка нескольких зон в одной сессии (по умолчанию: нет)"],
+}
+
+# Ответ Architecture API-агента для демо-кейса.
+ARCHITECTURE_MOCK: dict[str, Any] = {
+    "entities": [
+        {
+            "name": "ParkingZone",
+            "description": "Платная зона",
+            "fields": [
+                {"name": "id", "type": "string", "required": True, "description": "UUID"},
+                {"name": "name", "type": "string", "required": True, "description": "Название"},
+                {"name": "tariffPerHour", "type": "number", "required": True, "description": "Тариф"},
+            ],
+            "indexes": ["name"],
+        },
+        {
+            "name": "Session",
+            "description": "Парковочная сессия",
+            "fields": [
+                {"name": "id", "type": "string", "required": True, "description": "UUID"},
+                {"name": "userId", "type": "string", "required": True, "description": "Водитель"},
+                {"name": "zoneId", "type": "string", "required": True, "description": "Зона"},
+                {"name": "startedAt", "type": "datetime", "required": True, "description": "Начало"},
+                {"name": "endedAt", "type": "datetime", "required": False, "description": "Конец"},
+                {"name": "status", "type": "string", "required": True, "description": "active/completed"},
+            ],
+            "indexes": ["userId", "status"],
+        },
+        {
+            "name": "Payment",
+            "description": "Mock-платёж",
+            "fields": [
+                {"name": "id", "type": "string", "required": True, "description": "UUID"},
+                {"name": "sessionId", "type": "string", "required": True, "description": "Сессия"},
+                {"name": "amount", "type": "number", "required": True, "description": "Сумма"},
+                {"name": "status", "type": "string", "required": True, "description": "pending/paid"},
+            ],
+            "indexes": ["sessionId"],
+        },
+    ],
+    "events": [
+        {
+            "name": "SessionStarted",
+            "version": "1",
+            "payload": {"sessionId": "string", "zoneId": "string", "startedAt": "datetime"},
+            "idempotency_key": "sessionId",
+            "description": "Сессия начата",
+        },
+        {
+            "name": "SessionCompleted",
+            "version": "1",
+            "payload": {"sessionId": "string", "amount": "number", "endedAt": "datetime"},
+            "idempotency_key": "sessionId",
+            "description": "Сессия завершена",
+        },
+    ],
+    "operations": [
+        {
+            "method": "get",
+            "path": "/zones/{zoneId}",
+            "operationId": "getZone",
+            "summary": "Получить зону",
+            "request_schema": None,
+            "response_schema": {"$ref": "#/components/schemas/ParkingZone"},
+            "errors": ["404"],
+            "auth": False,
+            "tags": ["zones"],
+            "requirement_ids": ["FR-001"],
+            "error_schema": "ProblemDetails",
+        },
+        {
+            "method": "post",
+            "path": "/sessions",
+            "operationId": "startSession",
+            "summary": "Начать сессию",
+            "request_schema": {"type": "object", "properties": {"zoneId": {"type": "string"}}},
+            "response_schema": {"$ref": "#/components/schemas/Session"},
+            "errors": ["400", "409"],
+            "auth": True,
+            "tags": ["sessions"],
+            "requirement_ids": ["FR-001", "FR-002", "FR-005"],
+            "error_schema": "ProblemDetails",
+        },
+        {
+            "method": "post",
+            "path": "/sessions/{sessionId}/complete",
+            "operationId": "completeSession",
+            "summary": "Завершить сессию",
+            "request_schema": None,
+            "response_schema": {"$ref": "#/components/schemas/Session"},
+            "errors": ["404"],
+            "auth": True,
+            "tags": ["sessions"],
+            "requirement_ids": ["FR-002", "FR-005"],
+            "error_schema": "ProblemDetails",
+        },
+        {
+            "method": "get",
+            "path": "/sessions",
+            "operationId": "listSessions",
+            "summary": "История сессий",
+            "request_schema": None,
+            "response_schema": {"type": "array", "items": {"$ref": "#/components/schemas/Session"}},
+            "errors": [],
+            "auth": True,
+            "tags": ["sessions"],
+            "requirement_ids": ["FR-004"],
+            "error_schema": "ProblemDetails",
+        },
+        {
+            "method": "post",
+            "path": "/admin/zones",
+            "operationId": "createZone",
+            "summary": "Создать зону",
+            "request_schema": {"type": "object", "properties": {"name": {"type": "string"}}},
+            "response_schema": {"$ref": "#/components/schemas/ParkingZone"},
+            "errors": ["400", "403"],
+            "auth": True,
+            "tags": ["admin", "zones"],
+            "requirement_ids": ["FR-006", "NFR-002"],
+            "error_schema": "ProblemDetails",
+        },
+    ],
+}
+
+# Ответ UI Design-агента для демо-кейса.
+UI_MOCK: dict[str, Any] = {
+    "flows": [
+        {
+            "id": "FLOW-001",
+            "name": "Начало сессии",
+            "steps": ["SCR-001", "SCR-002"],
+        },
+        {
+            "id": "FLOW-002",
+            "name": "История",
+            "steps": ["SCR-003"],
+        },
+    ],
+    "screens": [
+        {
+            "id": "SCR-001",
+            "title": "Карта зоны",
+            "requirement_ids": ["FR-001"],
+            "states": {
+                "empty": "Нет данных о зоне",
+                "loading": "Определяем зону...",
+                "error": "Ошибка геолокации",
+                "forbidden": "",
+                "success": "Зона определена",
+            },
+            "actions": [{"id": "ACT-001", "label": "Начать сессию", "api_operation_id": "startSession", "navigates_to": "SCR-002"}],
+        },
+        {
+            "id": "SCR-002",
+            "title": "Активная сессия",
+            "requirement_ids": ["FR-002", "FR-003"],
+            "states": {
+                "empty": "",
+                "loading": "Загрузка сессии...",
+                "error": "Ошибка загрузки",
+                "forbidden": "",
+                "success": "Сессия активна",
+            },
+            "actions": [{"id": "ACT-002", "label": "Завершить", "api_operation_id": "completeSession", "navigates_to": "SCR-003"}],
+        },
+        {
+            "id": "SCR-003",
+            "title": "История",
+            "requirement_ids": ["FR-004"],
+            "states": {
+                "empty": "Сессий пока нет",
+                "loading": "Загрузка истории...",
+                "error": "Ошибка загрузки",
+                "forbidden": "",
+                "success": "История загружена",
+            },
+            "actions": [{"id": "ACT-003", "label": "Обновить", "api_operation_id": "listSessions", "navigates_to": None}],
+        },
+    ],
+    "components": [
+        {"name": "SessionCard", "description": "Карточка сессии"},
+        {"name": "ZoneMap", "description": "Карта зоны"},
+    ],
+}
+
 # Реестр предзаданных ответов по имени этапа.
 DEFAULT_MOCK_RESPONSES: dict[str, dict[str, Any]] = {
-    "requirements": REQUIREMENTS_MOCK,
+    "01_requirements": REQUIREMENTS_MOCK,
+    "02_system_analysis": SYSTEM_ANALYSIS_MOCK,
+    "03_architecture_api": ARCHITECTURE_MOCK,
+    "04_ui_design": UI_MOCK,
 }
 
 
