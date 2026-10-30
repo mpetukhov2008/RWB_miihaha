@@ -16,8 +16,11 @@ from pipeline.agents.architecture_api import ArchitectureApiAgent
 from pipeline.agents.base import AgentResult, BaseAgent
 from pipeline.agents.codegen_backend import CodegenBackendAgent
 from pipeline.agents.codegen_frontend import CodegenFrontendAgent
+from pipeline.agents.docs_agent import DocsAgent
 from pipeline.agents.requirements import RequirementsAgent
+from pipeline.agents.security_agent import SecurityReportAgent
 from pipeline.agents.system_analysis import SystemAnalysisAgent
+from pipeline.agents.tests_agent import TestsAgent
 from pipeline.agents.ui import UiDesignAgent
 from pipeline.config import Settings
 from pipeline.errors import StageFailed
@@ -34,6 +37,9 @@ STAGES: list[tuple[str, type[BaseAgent]]] = [
     ("04_ui_design", UiDesignAgent),
     ("05_codegen_backend", CodegenBackendAgent),
     ("06_codegen_frontend", CodegenFrontendAgent),
+    ("07_tests", TestsAgent),
+    ("08_security_report", SecurityReportAgent),
+    ("09_docs", DocsAgent),
 ]
 
 

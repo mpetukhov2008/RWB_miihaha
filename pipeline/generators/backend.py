@@ -63,7 +63,7 @@ def build_backend_skeleton(
             "using Generated.Api.Data;",
             "using Microsoft.AspNetCore.Authorization;",
             "using Microsoft.AspNetCore.Mvc;",
-            f"namespace Generated.Api.Controllers;",
+            "namespace Generated.Api.Controllers;",
             "",
             "[ApiController]",
             f'[Route("api/{tag}")]',

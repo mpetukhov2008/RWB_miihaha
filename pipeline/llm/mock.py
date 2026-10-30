@@ -445,6 +445,91 @@ CODEGEN_FRONTEND_MOCK: dict[str, Any] = {
     ],
 }
 
+# Ответы для финальных этапов (07-09).
+TESTS_MOCK: dict[str, Any] = {
+    "api_tests": [
+        {
+            "name": "Старт сессии",
+            "method": "post",
+            "path": "/sessions",
+            "cases": [
+                {"title": "Успешный старт", "expected_status": 201, "payload": {"zoneId": "z1"}},
+                {"title": "Неверная зона", "expected_status": 404, "payload": {"zoneId": "z2"}},
+            ],
+        }
+    ],
+    "e2e_tests": [
+        {
+            "name": "Начало и завершение сессии",
+            "scenario_id": "US-001",
+            "steps": ["Открыть карту", "Нажать «Начать»", "Завершить"],
+        }
+    ],
+}
+
+SECURITY_REPORT_MOCK: dict[str, Any] = {
+    "summary": "Секретов в репозитории нет; JWT и rate limit настроены.",
+    "findings": [
+        {
+            "severity": "info",
+            "title": "JWT signing key по умолчанию",
+            "description": "В dev-конфигурации ключ задаётся через переменную окружения; в проде — через CI variables.",
+            "status": "mitigated",
+        },
+        {
+            "severity": "low",
+            "title": "Rate limit 100 req/min — единый для всех",
+            "description": "Для админ-операций можно ужесточить лимит.",
+            "status": "open",
+        },
+    ],
+}
+
+DOCS_MOCK: dict[str, Any] = {
+    "files": [
+        {
+            "path": "README.md",
+            "content": (
+                "# Result\n\n"
+                "## Install\n`pip install -e .`\n\n"
+                "## Run\n`./run_pipeline.sh cases/parking/requirements.md`\n\n"
+                "## Test\n`pytest -q`\n"
+            ),
+        },
+        {
+            "path": "docs/user-guide.md",
+            "content": (
+                "# User Guide\n\n"
+                "FR-001: определение зоны.\nFR-002: активная сессия.\n"
+                "FR-003: уведомления.\nFR-004: история.\nFR-005: оплата.\n"
+                "FR-006: админ-панель.\nNFR-002: безопасность.\n"
+            ),
+        },
+        {
+            "path": "docs/known-limitations.md",
+            "content": (
+                "# Known Limitations\n\n"
+                "Водитель даёт согласие на геолокацию.\n"
+                "Одна активная сессия на водителя.\n"
+                "Тарифы задаются админом вручную.\n"
+                "Версия Angular зафиксирована как 20.1.6.\n"
+            ),
+        },
+        {
+            "path": "docs/run-instructions.md",
+            "content": "# Run Instructions\n\ndocker compose -f infra/docker-compose.yml up --build\n",
+        },
+        {
+            "path": "docs/dev-guide.md",
+            "content": "# Dev Guide\n\nАрхитектура: см. docs/pipeline-architecture.md.\n",
+        },
+        {
+            "path": "docs/product-description.md",
+            "content": "# Product Description\n\nСервис платных парковок (MVP).\n",
+        },
+    ]
+}
+
 # Реестр предзаданных ответов по имени этапа.
 DEFAULT_MOCK_RESPONSES: dict[str, dict[str, Any]] = {
     "01_requirements": REQUIREMENTS_MOCK,
@@ -453,6 +538,9 @@ DEFAULT_MOCK_RESPONSES: dict[str, dict[str, Any]] = {
     "04_ui_design": UI_MOCK,
     "05_codegen_backend": CODEGEN_BACKEND_MOCK,
     "06_codegen_frontend": CODEGEN_FRONTEND_MOCK,
+    "07_tests": TESTS_MOCK,
+    "08_security_report": SECURITY_REPORT_MOCK,
+    "09_docs": DOCS_MOCK,
 }
 
 

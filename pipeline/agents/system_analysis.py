@@ -48,7 +48,7 @@ class SystemAnalysisAgent(BaseAgent[SystemAnalysis]):
         """Валидировать ответ: схема + gates.
 
         Args:
-            data: Отве�� модели.
+            data: Ответ модели.
             inputs: Входные данные (требования).
 
         Returns:
@@ -83,8 +83,8 @@ class SystemAnalysisAgent(BaseAgent[SystemAnalysis]):
         """
         lines: list[str] = ["# Системный анализ", ""]
         lines.append("## Границы системы")
-        lines.append("**Внутри:** " + ", ".join(model.boundaries.inside) if model.boundaries.inside else "—")
-        lines.append("**Снаружи:** " + ", ".join(model.boundaries.outside) if model.boundaries.outside else "—")
+        lines.append("**Внутри:** " + (", ".join(model.boundaries.inside) if model.boundaries.inside else "—"))
+        lines.append("**Снаружи:** " + (", ".join(model.boundaries.outside) if model.boundaries.outside else "—"))
         lines.append("")
         lines.append("## Роли и разрешения")
         for rp in model.roles_permissions:

@@ -117,7 +117,7 @@ class UiDesignAgent(BaseAgent[UiSpec]):
                     "empty": "Нет данных",
                     "loading": "Загрузка...",
                     "error": "Ошибка загрузки",
-                    "forbidden": "��оступ запрещён" if op.get("auth") else "",
+                    "forbidden": "Доступ запрещён" if op.get("auth") else "",
                 },
                 actions=[
                     UiAction(
