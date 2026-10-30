@@ -49,26 +49,18 @@ class _FakeCompletions:
         )
 
 
-def _client(tmp_path: Path, fake: _FakeOpenAI, **env: str) -> LLMClient:
-    settings = Settings()
-    settings.__dict__["_overrides"] = env  # не используется, ниже явно
-    return LLMClient(tmp_path, settings=_make_settings(**env)).__class__.__new__(LLMClient)
+def _make_client(tmp_path: Path, fake: object, monkeypatch: pytest.MonkeyPatch) -> LLMClient:
+    """LLMClient с подменённым сетевым клиентом."""
+    monkeypatch.delenv("LLM_MODE", raising=False)
+    client = LLMClient(tmp_path, settings=Settings())
+    client._client = fake  # type: ignore[assignment]
+    return client
 
 
-def _make_settings(**env: str) -> Settings:
-    import os
-
-    old = {k: os.environ.get(k) for k in env}
-    for k, v in env.items():
-        os.environ[k] = v
-    return Settings()
-
-
-def test_cache_second_call_no_network(tmp_path: Path) -> None:
+def test_cache_second_call_no_network(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Второй вызов с тем же запросом не ходит в сеть (cache_hit)."""
     fake = _FakeOpenAI(response_text='{"ok": true}')
-    client = LLMClient(tmp_path, settings=_make_settings())
-    client._client = fake  # type: ignore[assignment]
+    client = _make_client(tmp_path, fake, monkeypatch)
 
     r1 = client.complete_json("req", "v1", "sys", "user", {"type": "object"})
     r2 = client.complete_json("req", "v1", "sys", "user", {"type": "object"})
@@ -87,17 +79,16 @@ def test_cache_second_call_no_network(tmp_path: Path) -> None:
     assert second["tokens_in"] == 0 and second["tokens_out"] == 0
 
 
-def test_strip_markdown_fence(tmp_path: Path) -> None:
+def test_strip_markdown_fence(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Ответ в ```json ... ``` корректно распарсивается."""
     fake = _FakeOpenAI(response_text='```json\n{"a": 1}\n```')
-    client = LLMClient(tmp_path, settings=_make_settings())
-    client._client = fake  # type: ignore[assignment]
+    client = _make_client(tmp_path, fake, monkeypatch)
 
     data = client.complete_json("stage", "v1", "sys", "user")
     assert data == {"a": 1}
 
 
-def test_network_retry_then_success(tmp_path: Path) -> None:
+def test_network_retry_then_success(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Таймаут -> retry -> успех; логи пишутся по каждой попытке."""
     calls = {"n": 0}
 
@@ -105,17 +96,17 @@ def test_network_retry_then_success(tmp_path: Path) -> None:
         def __init__(self) -> None:
             self.calls: list[dict] = []
 
-        def chat(self) -> "_FakeChat":
-            return _FakeChat(self)
+        def chat(self) -> "_FakeChat2":
+            return _FakeChat2(self)
 
-    class _FakeChat:
+    class _FakeChat2:
         def __init__(self, parent: Flaky) -> None:
             self._parent = parent
 
-        def completions(self) -> _FakeCompletions:
-            return _FakeCompletions(self._parent)
+        def completions(self) -> "_FakeCompletions2":
+            return _FakeCompletions2(self._parent)
 
-    class _FakeCompletions:
+    class _FakeCompletions2:
         def __init__(self, parent: Flaky) -> None:
             self._parent = parent
 
@@ -131,40 +122,39 @@ def test_network_retry_then_success(tmp_path: Path) -> None:
             )
 
     flaky = Flaky()
-    client = LLMClient(tmp_path, settings=_make_settings())
-    client._client = flaky  # type: ignore[assignment]
+    client = _make_client(tmp_path, flaky, monkeypatch)
 
     data = client.complete_json("stage", "v1", "sys", "user")
     assert data == {"ok": 1}
     assert len(flaky.calls) == 2
 
 
-def test_network_error_exhausted(tmp_path: Path) -> None:
+def test_network_error_exhausted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Все сетевые попытки провалились -> LLMUnavailable."""
     fake = _FakeOpenAI(error=APIConnectionError(request=None))
-    client = LLMClient(tmp_path, settings=_make_settings())
-    client._client = fake  # type: ignore[assignment]
+    client = _make_client(tmp_path, fake, monkeypatch)
 
     with pytest.raises(LLMUnavailable):
         client.complete_json("stage", "v1", "sys", "user")
     assert len(fake.calls) == 2  # LLM_NETWORK_RETRIES
 
 
-def test_invalid_json_raises(tmp_path: Path) -> None:
+def test_invalid_json_raises(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Не-JSON ответ -> LLMUnavailable."""
     fake = _FakeOpenAI(response_text="не json")
-    client = LLMClient(tmp_path, settings=_make_settings())
-    client._client = fake  # type: ignore[assignment]
+    client = _make_client(tmp_path, fake, monkeypatch)
 
     with pytest.raises(LLMUnavailable):
         client.complete_json("stage", "v1", "sys", "user")
 
 
-def test_json_mode_off_no_response_format(tmp_path: Path) -> None:
+def test_json_mode_off_no_response_format(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """При LLM_JSON_MODE=0 параметр response_format не передаётся."""
+    monkeypatch.setenv("LLM_JSON_MODE", "0")
     fake = _FakeOpenAI(response_text='{"ok": 1}')
-    client = LLMClient(tmp_path, settings=_make_settings(LLM_JSON_MODE="0"))
-    client._client = fake  # type: ignore[assignment]
+    client = _make_client(tmp_path, fake, monkeypatch)
 
     client.complete_json("stage", "v1", "sys", "user")
     assert "response_format" not in fake.calls[0]

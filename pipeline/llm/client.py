@@ -19,6 +19,7 @@ from openai import APIConnectionError, APITimeoutError, OpenAI
 
 from pipeline.config import LLM_NETWORK_RETRIES, LLM_TIMEOUT_SEC, Settings
 from pipeline.errors import LLMUnavailable
+from pipeline.llm.mock import MockBackend
 
 logger = logging.getLogger(__name__)
 
@@ -48,10 +49,17 @@ class LLMClient:
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.logs_dir.mkdir(parents=True, exist_ok=True)
         self.settings = settings or Settings()
+        self._mock_mode = self.settings.llm_mode == "mock"
         self._client = self._build_client()
 
-    def _build_client(self) -> OpenAI:
-        """Создать клиент OpenAI с таймаутом; может быть подменён в тестах."""
+    def _build_client(self) -> OpenAI | MockBackend:
+        """Создать реальный клиент OpenAI или mock-бэкенд.
+
+        В режиме ``LLM_MODE=mock`` сетевой клиент не создаётся — пайплайн
+        работает без сети и без ключа (демо, CI).
+        """
+        if self._mock_mode:
+            return MockBackend()
         return OpenAI(
             base_url=self.settings.llm_base_url,
             api_key=self.settings.llm_api_key or "not-set",
@@ -186,6 +194,19 @@ class LLMClient:
             self._log_call(stage, attempt, LLMMetrics(status="cache_hit"), self.settings.llm_model)
             return cached
 
+        if self._mock_mode:
+            started = time.monotonic()
+            data = self._mock_call(stage, system_prompt, user_prompt, json_schema)
+            latency_ms = int((time.monotonic() - started) * 1000)
+            self._log_call(
+                stage,
+                attempt,
+                LLMMetrics(tokens_in=0, tokens_out=0, latency_ms=latency_ms, status="ok"),
+                self.settings.llm_model,
+            )
+            self._write_cache(key, data)
+            return data
+
         last_error: Exception | None = None
         for network_attempt in range(1, LLM_NETWORK_RETRIES + 1):
             try:
@@ -193,7 +214,6 @@ class LLMClient:
                 data = self._call(
                     system_prompt=system_prompt,
                     user_prompt=user_prompt,
-                    json_schema=json_schema,
                 )
                 latency_ms = int((time.monotonic() - started) * 1000)
                 self._log_call(
@@ -220,18 +240,37 @@ class LLMClient:
                 time.sleep(1.0 * network_attempt)
         raise LLMUnavailable(f"LLM недоступен после {LLM_NETWORK_RETRIES} попыток: {last_error}")
 
+    def _mock_call(
+        self,
+        stage: str,
+        system_prompt: str,
+        user_prompt: str,
+        json_schema: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        """Вызвать mock-бэкенд (без сети).
+
+        Args:
+            stage: Имя этапа.
+            system_prompt: Системный промпт.
+            user_prompt: Пользовательский промпт.
+            json_schema: JSON Schema ответа.
+
+        Returns:
+            Предзаданный JSON-ответ.
+        """
+        assert isinstance(self._client, MockBackend)
+        return self._client.complete(stage, self.settings.llm_model, system_prompt, user_prompt, json_schema)
+
     def _call(
         self,
         system_prompt: str,
         user_prompt: str,
-        json_schema: dict[str, Any] | None,
     ) -> Any:
         """Один сетевой вызов chat.completions.create (без retry).
 
         Args:
             system_prompt: Системный промпт.
             user_prompt: Пользовательский промпт.
-            json_schema: JSON Schema ответа.
 
         Returns:
             Объект ответа OpenAI с полями ``content``, ``tokens_in``,
@@ -245,9 +284,11 @@ class LLMClient:
             ],
             "temperature": 0.0,
         }
-        if self.settings.llm_json_mode and json_schema is not None:
+        if self.settings.llm_json_mode:
             kwargs["response_format"] = {"type": "json_object"}
-            kwargs["response_format_schema"] = json_schema
+        # JSON Schema не отправляется отдельным параметром (не все
+        # Qwen-эндпоинты его поддерживают); схема передаётся модели
+        # внутри user-промпта агентом в build_user_prompt.
 
         response = self._client.chat.completions.create(**kwargs)
         content = response.choices[0].message.content or ""
