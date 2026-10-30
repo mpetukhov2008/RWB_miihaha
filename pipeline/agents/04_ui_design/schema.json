@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UiSpec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["flows", "screens", "components"],
+  "properties": {
+    "flows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "steps"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^FLOW-\\d{3,}$" },
+          "name": { "type": "string" },
+          "steps": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "screens": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "requirement_ids"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^SCR-\\d{3,}$" },
+          "title": { "type": "string" },
+          "requirement_ids": { "type": "array", "items": { "type": "string" } },
+          "states": {
+            "type": "object",
+            "properties": {
+              "empty": { "type": "string" },
+              "loading": { "type": "string" },
+              "error": { "type": "string" },
+              "forbidden": { "type": "string" },
+              "success": { "type": "string" }
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "label"],
+              "properties": {
+                "id": { "type": "string" },
+                "label": { "type": "string" },
+                "api_operation_id": { "type": ["string", "null"] },
+                "navigates_to": { "type": ["string", "null"] }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "description"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    }
+  }
+}
