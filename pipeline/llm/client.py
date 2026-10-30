@@ -288,6 +288,7 @@ class LLMClient:
                 {"role": "user", "content": user_prompt},
             ],
             "temperature": 0.0,
+            "max_tokens": 8000,
         }
         if self.settings.llm_json_mode:
             kwargs["response_format"] = {"type": "json_object"}
