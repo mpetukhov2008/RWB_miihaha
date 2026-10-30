@@ -64,13 +64,28 @@ class RequirementsAgent(BaseAgent[RequirementsDoc]):
         """
         doc = RequirementsDoc.model_validate(data)
 
+        # Ответы заказчика (answers.json): {question_id: answer}.
+        # Вопрос считается отвеченным, если для него есть ответ ИЛИ у вопроса
+        # задан default_if_unanswered (разблокирует работу без человека).
+        answers: dict[str, str] = inputs.get("answers") or {}
+        blocking = [
+            q
+            for q in doc.open_questions
+            if q.severity == "blocking"
+            and q.id not in answers
+            and q.default_if_unanswered is None
+        ]
+
         gates: dict[str, str] = {}
         ids = [r.id for r in doc.requirements]
         gates["schema"] = "ok"
         gates["unique_ids"] = "ok" if len(ids) == len(set(ids)) else "fail"
         gates["questions_limit"] = "ok" if len(doc.open_questions) <= 5 else "fail"
-        blocking = [q for q in doc.open_questions if q.severity == "blocking"]
-        gates["blocking_limit"] = "ok" if len(blocking) <= 2 else "fail"
+        gates["blocking_limit"] = (
+            "ok"
+            if len([q for q in doc.open_questions if q.severity == "blocking"]) <= 2
+            else "fail"
+        )
         gates["acceptance_criteria"] = (
             "ok"
             if all(r.acceptance_criteria for r in doc.requirements if r.priority == "must")

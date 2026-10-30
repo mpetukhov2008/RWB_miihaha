@@ -153,6 +153,9 @@ def run_pipeline(
         if state.stage_status(stage_name) == "done":
             logger.info("Этап %s уже завершён — пропуск", stage_name)
             continue
+        if state.stage_status(stage_name) == "waiting_answers" and not answers:
+            logger.info("Этап %s ждёт answers.json — остановка", stage_name)
+            return "waiting_answers"
 
         state.start_stage(stage_name, agent_cls.prompt_version)
         agent = agent_cls(llm, run_dir)
