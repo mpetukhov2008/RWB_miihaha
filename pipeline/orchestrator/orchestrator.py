@@ -1,8 +1,8 @@
 """Оркестратор: последовательный проход по этапам пайплайна.
 
-Один этап = один агент = один артефакт. После каждого агента проверяется
-Question Gate: если в артефакте есть blocking-вопросы — прогон останавливается
-и ждёт ``answers.json``. Артефакты персистятся в ``runs/{id}/{stage}/``.
+Один этап = один агент = один артефакт. Артефакты предыдущих этапов
+передаются следующим агентам через ``inputs``. Question Gate останавливает
+прогон при blocking-вопросах до появления ``answers.json``.
 """
 
 from __future__ import annotations
@@ -12,8 +12,11 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from pipeline.agents.architecture_api import ArchitectureApiAgent
 from pipeline.agents.base import AgentResult, BaseAgent
 from pipeline.agents.requirements import RequirementsAgent
+from pipeline.agents.system_analysis import SystemAnalysisAgent
+from pipeline.agents.ui import UiDesignAgent
 from pipeline.config import Settings
 from pipeline.errors import StageFailed
 from pipeline.llm.client import LLMClient
@@ -21,10 +24,61 @@ from pipeline.orchestrator.state import RunState
 
 logger = logging.getLogger(__name__)
 
-# Порядок этапов: (имя, класс агента).
+# Порядок этапов: (имя этапа, класс агента).
 STAGES: list[tuple[str, type[BaseAgent]]] = [
     ("01_requirements", RequirementsAgent),
+    ("02_system_analysis", SystemAnalysisAgent),
+    ("03_architecture_api", ArchitectureApiAgent),
+    ("04_ui_design", UiDesignAgent),
 ]
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    """Прочитать JSON-артефакт с диска.
+
+    Args:
+        path: Путь к JSON-файлу.
+
+    Returns:
+        Словарь или пустой dict, если файла нет.
+    """
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def _build_inputs(run_dir: Path, initial: dict[str, Any]) -> dict[str, Any]:
+    """Собрать входные данные этапов из сохранённых артефактов.
+
+    Args:
+        run_dir: Корень прогона.
+        initial: Начальные входы (requirements_md, answers, case_dir).
+
+    Returns:
+        Словарь inputs для агентов: requirements, system_analysis,
+        architecture, ui.
+    """
+    inputs: dict[str, Any] = dict(initial)
+    req = _read_json(run_dir / "01_requirements" / "requirements.json")
+    if req:
+        inputs["requirements"] = req
+    # system-analysis.md — markdown; системную модель как JSON держим
+    # в requirements.json (roles) и в system-model.json (если появится).
+    sm = _read_json(run_dir / "02_system_analysis" / "system-model.json")
+    if sm:
+        inputs["system_analysis"] = sm
+    arch = _read_json(run_dir / "03_architecture_api" / "data-model.json")
+    if arch:
+        inputs["architecture"] = arch
+    # Полный architecture dict (с operations) берём из openapi? Нет:
+    # operations хранятся в data-model?.. Храним отдельно в architecture.json.
+    arch_full = _read_json(run_dir / "03_architecture_api" / "architecture.json")
+    if arch_full:
+        inputs["architecture"] = arch_full
+    return inputs
 
 
 def _persist_artifacts(stage_dir: Path, artifacts: dict[str, Any]) -> None:
@@ -55,14 +109,14 @@ def run_pipeline(
     """Выполнить все этапы пайплайна.
 
     Args:
-        run_dir: Корень прогона (``runs/{run_id}/``).
+        run_dir: Корень прогона (``generated/<case>/``).
         requirements_md: Текст бизнес-требований.
         answers: Ответы на blocking-вопросы (``{question_id: answer}``).
         settings: Конфигурация LLM (по умолчанию — из env).
 
     Returns:
-            ``"done"`` при полном завершении, ``"waiting_answers"`` при
-            остановке на blocking-вопросах.
+        ``"done"`` при полном завершении, ``"waiting_answers"`` при
+        остановке на blocking-вопросах.
 
     Raises:
         StageFailed: Если этап упал (исключение или непройденные gates).
@@ -71,7 +125,7 @@ def run_pipeline(
     state = RunState(run_dir)
     llm = LLMClient(run_dir, settings)
 
-    inputs: dict[str, Any] = {
+    initial: dict[str, Any] = {
         "requirements_md": requirements_md,
         "answers": answers or {},
     }
@@ -83,13 +137,15 @@ def run_pipeline(
 
         state.start_stage(stage_name, agent_cls.prompt_version)
         agent = agent_cls(llm, run_dir)
+
+        inputs = _build_inputs(run_dir, initial)
         try:
             result: AgentResult = agent.run(inputs)
         except Exception as exc:  # noqa: BLE001
             state.fail_stage(stage_name, str(exc))
             raise StageFailed(f"Этап {stage_name!r} упал: {exc}") from exc
 
-        # Question Gate: блокирующие вопросы останавливают прогон.
+        # Question Gate: blocking-вопросы останавливают прогон.
         if result.questions_blocking > 0:
             state.wait_answers(stage_name)
             return "waiting_answers"
