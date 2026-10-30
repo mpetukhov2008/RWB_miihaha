@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tests",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["api_tests", "e2e_tests"],
+  "properties": {
+    "api_tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "method", "path", "cases"],
+        "properties": {
+          "name": { "type": "string" },
+          "method": { "type": "string" },
+          "path": { "type": "string" },
+          "cases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["title", "expected_status"],
+              "properties": {
+                "title": { "type": "string" },
+                "expected_status": { "type": "integer" },
+                "payload": { "type": ["object", "null"] }
+              }
+            }
+          }
+        }
+      }
+    },
+    "e2e_tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "steps"],
+        "properties": {
+          "name": { "type": "string" },
+          "scenario_id": { "type": "string" },
+          "steps": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}
