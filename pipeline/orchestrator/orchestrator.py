@@ -110,6 +110,7 @@ def _persist_artifacts(stage_dir: Path, artifacts: dict[str, Any]) -> None:
     stage_dir.mkdir(parents=True, exist_ok=True)
     for filename, content in artifacts.items():
         path = stage_dir / filename
+        path.parent.mkdir(parents=True, exist_ok=True)  # вложенные пути (backend/Controllers/...)
         if isinstance(content, (dict, list)):
             path.write_text(
                 json.dumps(content, ensure_ascii=False, indent=2),

@@ -30,7 +30,9 @@ def test_happy_path(tmp_path: Path) -> None:
     result = agent.run(_inputs())
 
     assert result.ok() is True
-    assert result.questions_blocking == 1
+    # Q-001 — blocking, но с default_if_unanswered, поэтому не останавливает
+    # прогон (см. tests/test_question_gate.py).
+    assert result.questions_blocking == 0
     assert set(result.gates) == {
         "schema",
         "unique_ids",
