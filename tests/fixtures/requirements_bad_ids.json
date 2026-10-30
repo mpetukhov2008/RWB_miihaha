@@ -1,0 +1,32 @@
+{
+  "goals": ["Цель"],
+  "roles": [
+    {"id": "R-1", "name": "Роль с неверным ID"}
+  ],
+  "requirements": [
+    {
+      "id": "FR-1",
+      "type": "FR",
+      "title": "Требование с неверным ID",
+      "description": "ID должен быть FR-XXX (минимум 3 цифры)",
+      "priority": "must",
+      "source": "customer",
+      "acceptance_criteria": ["Критерий"],
+      "depends_on": []
+    },
+    {
+      "id": "FR-001",
+      "type": "FR",
+      "title": "Дубликат ID",
+      "description": "Тот же ID, что у предыдущего требования",
+      "priority": "must",
+      "source": "customer",
+      "acceptance_criteria": ["Критерий"],
+      "depends_on": []
+    }
+  ],
+  "constraints": [],
+  "risks": [],
+  "assumptions": [],
+  "open_questions": []
+}
