@@ -7,10 +7,13 @@ WORKDIR /app
 
 COPY pyproject.toml ./
 COPY pipeline ./pipeline
-COPY prompts ./prompts
-COPY examples ./examples
+COPY schemas ./schemas
+COPY cases ./cases
+COPY templates ./templates
+COPY run_pipeline.sh ./
+RUN chmod +x run_pipeline.sh
 
 RUN pip install --no-cache-dir -e .
 
-ENTRYPOINT ["pipeline"]
-CMD ["--help"]
+ENTRYPOINT ["./run_pipeline.sh"]
+CMD ["cases/parking/requirements.md"]
