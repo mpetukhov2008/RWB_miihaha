@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ArchitectureApi",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["entities", "events", "operations"],
+  "properties": {
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "fields"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "type"],
+              "properties": {
+                "name": { "type": "string" },
+                "type": { "type": "string" },
+                "required": { "type": "boolean" },
+                "description": { "type": "string" }
+              }
+            }
+          },
+          "indexes": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "version", "payload"],
+        "properties": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "payload": { "type": "object" },
+          "idempotency_key": { "type": ["string", "null"] },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["method", "path", "operationId", "summary", "response_schema", "errors", "auth", "tags"],
+        "properties": {
+          "method": { "enum": ["get", "post", "put", "patch", "delete"] },
+          "path": { "type": "string" },
+          "operationId": { "type": "string" },
+          "summary": { "type": "string" },
+          "request_schema": { "type": ["object", "null"] },
+          "response_schema": { "type": "object" },
+          "errors": { "type": "array", "items": { "type": "string" } },
+          "auth": { "type": "boolean" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "requirement_ids": { "type": "array", "items": { "type": "string" } },
+          "error_schema": { "type": "string" }
+        }
+      }
+    }
+  }
+}
