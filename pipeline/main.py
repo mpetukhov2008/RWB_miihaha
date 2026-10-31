@@ -108,5 +108,27 @@ def run(
     typer.echo(f"Пайплайн завершён. Результат: {out_dir}")
 
 
+@app.command()
+def site(
+    run_dir: Path = typer.Option(
+        ...,
+        "--run-dir",
+        "-d",
+        exists=True,
+        file_okay=False,
+        help="Директория прогона (например, generated/parking/)",
+    ),
+) -> None:
+    """Собрать статический сайт из артефактов прогона.
+
+    Пишет HTML-страницы в ``<run_dir>/site/``: требования, API,
+    модель данных, экраны, трассируемость, отчёты.
+    """
+    from pipeline.generators.site import write_site
+
+    site_path = write_site(run_dir)
+    typer.echo(f"Сайт собран: {site_path}")
+
+
 if __name__ == "__main__":
     sys.exit(app())
