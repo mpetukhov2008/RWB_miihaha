@@ -1,0 +1,258 @@
+[
+  {
+    "name": "Application",
+    "description": "Заявка на проверку рекламной конструкции (фото или видео).",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": true,
+        "description": "Уникальный идентификатор заявки (UUID)."
+      },
+      {
+        "name": "type",
+        "type": "string",
+        "required": true,
+        "description": "Тип заявки: photo, video."
+      },
+      {
+        "name": "status",
+        "type": "string",
+        "required": true,
+        "description": "Статус обработки: pending, processing, completed, failed."
+      },
+      {
+        "name": "reference_file_id",
+        "type": "string",
+        "required": true,
+        "description": "Идентификатор эталонного макета (ReferenceFile)."
+      },
+      {
+        "name": "source_file_id",
+        "type": "string",
+        "required": true,
+        "description": "Идентификатор исходного медиафайла (MediaFile)."
+      },
+      {
+        "name": "result_file_id",
+        "type": "string",
+        "required": false,
+        "description": "Идентификатор итогового медиафайла (MediaFile), если применимо."
+      },
+      {
+        "name": "created_at",
+        "type": "datetime",
+        "required": true,
+        "description": "Дата и время создания заявки."
+      },
+      {
+        "name": "updated_at",
+        "type": "datetime",
+        "required": true,
+        "description": "Дата и времени последнего обновления."
+      }
+    ],
+    "indexes": [
+      "idx_application_status",
+      "idx_application_type",
+      "idx_application_created_at"
+    ]
+  },
+  {
+    "name": "ReferenceFile",
+    "description": "Эталонный статический макет (JPEG/PNG), используемый для сверки.",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": true,
+        "description": "Уникальный идентификатор эталонного макета (UUID)."
+      },
+      {
+        "name": "s3_key",
+        "type": "string",
+        "required": true,
+        "description": "Ключ файла в S3."
+      },
+      {
+        "name": "mime_type",
+        "type": "string",
+        "required": true,
+        "description": "Тип MIME (image/jpeg, image/png)."
+      },
+      {
+        "name": "created_at",
+        "type": "datetime",
+        "required": true,
+        "description": "Дата и время загрузки."
+      }
+    ],
+    "indexes": [
+      "idx_reference_file_s3_key"
+    ]
+  },
+  {
+    "name": "MediaFile",
+    "description": "Исходный или итоговый медиафайл (фото или видео).",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": true,
+        "description": "Уникальный идентификатор медиафайла (UUID)."
+      },
+      {
+        "name": "s3_key",
+        "type": "string",
+        "required": true,
+        "description": "Ключ файла в S3."
+      },
+      {
+        "name": "mime_type",
+        "type": "string",
+        "required": true,
+        "description": "Тип MIME (image/jpeg, image/png, video/mp4)."
+      },
+      {
+        "name": "size_bytes",
+        "type": "integer",
+        "required": true,
+        "description": "Размер файла в байтах."
+      },
+      {
+        "name": "duration_seconds",
+        "type": "number",
+        "required": false,
+        "description": "Длительность видео в секундах (для видеофайлов)."
+      },
+      {
+        "name": "created_at",
+        "type": "datetime",
+        "required": true,
+        "description": "Дата и время загрузки."
+      }
+    ],
+    "indexes": [
+      "idx_media_file_s3_key",
+      "idx_media_file_mime_type"
+    ]
+  },
+  {
+    "name": "PhotoAnalysisResult",
+    "description": "Результат анализа фотографии: качество и соответствие макету.",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": true,
+        "description": "Уникальный идентификатор результата (UUID)."
+      },
+      {
+        "name": "application_id",
+        "type": "string",
+        "required": true,
+        "description": "Идентификатор заявки (Application)."
+      },
+      {
+        "name": "similarity_score",
+        "type": "number",
+        "required": true,
+        "description": "Процент схожести с эталонным макетом (0-100)."
+      },
+      {
+        "name": "quality_status",
+        "type": "string",
+        "required": true,
+        "description": "Статус качества: low_quality, acceptable."
+      },
+      {
+        "name": "match_status",
+        "type": "string",
+        "required": true,
+        "description": "Статус соответствия: matches, does_not_match, low_quality."
+      },
+      {
+        "name": "created_at",
+        "type": "datetime",
+        "required": true,
+        "description": "Дата и время завершения анализа."
+      }
+    ],
+    "indexes": [
+      "idx_photo_analysis_application_id",
+      "idx_photo_analysis_match_status"
+    ]
+  },
+  {
+    "name": "VideoAnalysisResult",
+    "description": "Результат анализа видеопотока: временные метки обнаруженных роликов.",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": true,
+        "description": "Уникальный идентификатор результата (UUID)."
+      },
+      {
+        "name": "application_id",
+        "type": "string",
+        "required": true,
+        "description": "Идентификатор заявки (Application)."
+      },
+      {
+        "name": "segments",
+        "type": "array",
+        "required": true,
+        "description": "Массив обнаруженных сегментов (start_time, end_time)."
+      },
+      {
+        "name": "created_at",
+        "type": "datetime",
+        "required": true,
+        "description": "Дата и время завершения анализа."
+      }
+    ],
+    "indexes": [
+      "idx_video_analysis_application_id"
+    ]
+  },
+  {
+    "name": "VideoSegment",
+    "description": "Обнаруженный сегмент рекламного ролика в исходном видео.",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": true,
+        "description": "Уникальный идентификатор сегмента (UUID)."
+      },
+      {
+        "name": "video_analysis_id",
+        "type": "string",
+        "required": true,
+        "description": "Идентификатор результата видеоанализа (VideoAnalysisResult)."
+      },
+      {
+        "name": "start_time",
+        "type": "number",
+        "required": true,
+        "description": "Начальная временная метка в секундах."
+      },
+      {
+        "name": "end_time",
+        "type": "number",
+        "required": true,
+        "description": "Конечная временная метка в секундах."
+      },
+      {
+        "name": "result_file_id",
+        "type": "string",
+        "required": false,
+        "description": "Идентификатор вырезанного файла (MediaFile), если нарезка выполнена."
+      }
+    ],
+    "indexes": [
+      "idx_video_segment_analysis_id"
+    ]
+  }
+]

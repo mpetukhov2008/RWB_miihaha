@@ -1,33 +1,7 @@
-### Python ###
-__pycache__/
-*.py[cod]
-*.egg-info/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-dist/
-build/
 .venv/
-venv/
-
-### Env ###
-.env
-*.env.local
-
-### Node ###
+__pycache__/
+*.pyc
 node_modules/
-frontend-angular/node_modules/
-
-### .NET ###
-bin/
-obj/
-*.user
-
-### Логи и временные файлы ###
-*.log
+.angular/
 .DS_Store
-
-### Результаты прогонов (коммитятся осознанно через git add -f) ###
-runs/
-generated/*
-!generated/.gitkeep
+*.bak

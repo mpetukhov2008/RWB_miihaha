@@ -1,0 +1,74 @@
+{
+  "run_id": "media_real_1437",
+  "stages": {
+    "01_requirements": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:37:39.830648+00:00",
+      "gates": {
+        "schema": "ok",
+        "unique_ids": "ok",
+        "questions_limit": "ok",
+        "blocking_limit": "ok",
+        "acceptance_criteria": "ok",
+        "has_must": "ok"
+      },
+      "finished_at": "2026-10-31T11:39:01.658023+00:00"
+    },
+    "02_system_analysis": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:39:01.658284+00:00",
+      "gates": {
+        "schema": "ok",
+        "scenarios_nonempty": "ok",
+        "actors_defined": "ok"
+      },
+      "finished_at": "2026-10-31T11:39:47.785857+00:00"
+    },
+    "03_architecture_api": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:39:47.786133+00:00",
+      "gates": {
+        "schema": "ok",
+        "operation_ids": "ok",
+        "tags_defined": "ok",
+        "error_format": "ok",
+        "must_coverage": "fail"
+      },
+      "finished_at": "2026-10-31T11:41:14.764701+00:00"
+    },
+    "04_ui_design": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:41:14.764981+00:00",
+      "gates": {
+        "schema": "ok",
+        "screens_states": "ok",
+        "actions_valid": "ok",
+        "screens_nonempty": "ok"
+      },
+      "finished_at": "2026-10-31T11:41:54.900092+00:00"
+    },
+    "05_codegen_backend": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:41:54.900387+00:00",
+      "gates": {
+        "schema": "ok",
+        "files_nonempty": "ok",
+        "controllers_generated": "ok"
+      },
+      "finished_at": "2026-10-31T11:43:33.625064+00:00"
+    },
+    "06_codegen_frontend": {
+      "status": "failed",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:43:33.625346+00:00",
+      "error": "Ответ модели не является JSON: Unterminated string starting at: line 54 column 18 (char 20540)",
+      "failed_at": "2026-10-31T11:45:54.512783+00:00"
+    }
+  },
+  "created_at": "2026-10-31T11:37:39.785132+00:00"
+}

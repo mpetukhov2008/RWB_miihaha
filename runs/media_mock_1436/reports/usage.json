@@ -1,0 +1,76 @@
+{
+  "total_time_sec": 0.0,
+  "total_tokens_in": 0,
+  "total_tokens_out": 0,
+  "calls": 9,
+  "retries": 0,
+  "cache_hits": 0,
+  "stages_first_try_ok": 5,
+  "stages_total": 9,
+  "manual_edits": 0,
+  "per_stage": {
+    "01_requirements": {
+      "calls": 1,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "latency_ms": 0,
+      "cache_hits": 0
+    },
+    "02_system_analysis": {
+      "calls": 1,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "latency_ms": 0,
+      "cache_hits": 0
+    },
+    "03_architecture_api": {
+      "calls": 1,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "latency_ms": 0,
+      "cache_hits": 0
+    },
+    "04_ui_design": {
+      "calls": 1,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "latency_ms": 0,
+      "cache_hits": 0
+    },
+    "05_codegen_backend": {
+      "calls": 1,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "latency_ms": 0,
+      "cache_hits": 0
+    },
+    "06_codegen_frontend": {
+      "calls": 1,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "latency_ms": 0,
+      "cache_hits": 0
+    },
+    "07_tests": {
+      "calls": 1,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "latency_ms": 0,
+      "cache_hits": 0
+    },
+    "08_security_report": {
+      "calls": 1,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "latency_ms": 0,
+      "cache_hits": 0
+    },
+    "09_docs": {
+      "calls": 1,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "latency_ms": 0,
+      "cache_hits": 0
+    }
+  }
+}

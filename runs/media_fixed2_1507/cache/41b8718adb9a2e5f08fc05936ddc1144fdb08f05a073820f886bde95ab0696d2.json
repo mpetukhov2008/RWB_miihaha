@@ -1,0 +1,28 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "content": "# Media Verification Service\n\n## Install\n```bash\ndocker compose pull\ndocker compose build\n```\n\n## Run\n```bash\ndocker compose up -d\n```\n\n## Test\n```bash\ndocker compose exec backend dotnet test\n```\n\n## Docs\n- [User Guide](docs/user-guide.md)\n- [Run Instructions](docs/run-instructions.md)\n- [Dev Guide](docs/dev-guide.md)\n- [Known Limitations](docs/known-limitations.md)\n- [Product Description](docs/product-description.md)"
+    },
+    {
+      "path": "docs/user-guide.md",
+      "content": "# User Guide\n\n## FR-001: Photo Verification\n1. Open app (Android/PWA).\n2. Select photo and reference template (JPEG/PNG).\n3. Start processing.\n4. Result: similarity % and status (Matches/Does not match/Low quality).\n5. On success, photo is linked to request.\n\n## FR-002: Video Analysis\n1. Upload video (150-300s) and reference template.\n2. System detects creative timestamps (start_time, end_time).\n3. Report with timestamps is generated.\n\n## FR-003: Video Cutting\n1. System cuts 15s clip using detected timestamps.\n2. Output: MP4 (H.264), accuracy ±0.1s.\n3. Clip is linked to request.\n\n## FR-004: Storage & Integration\n1. Final file saved to S3.\n2. Status 'Completed' + file link sent via Kafka and REST API."
+    },
+    {
+      "path": "docs/known-limitations.md",
+      "content": "# Known Limitations\n\n## Assumptions\n- Target ad clip duration is fixed at 15 seconds.\n- Employees upload files in areas with stable internet for heavy video transfer to S3/backend.\n\n## Security & Performance\n- Glare, overexposure, defocus, or sharp shooting angles may reduce recognition accuracy below 95%.\n- Processing 300s videos with parallel loads may exceed the 20-minute limit.\n- Differences between static template and dynamic video may complicate start/end time detection.\n- Secure transfer of media data and statuses is required.\n- Integration with existing mobile app (Android/PWA) is supported."
+    },
+    {
+      "path": "docs/run-instructions.md",
+      "content": "# Run Instructions\n\n## Docker Compose\n```bash\ndocker compose up -d\n```\n\n## Services\n- backend: .NET API\n- vision: OpenCV/PyTorch CV service\n- ffmpeg: video processing\n- kafka: event streaming\n- s3: object storage (MinIO for local)\n\n## Verify\n```bash\ncurl http://localhost:8080/health\n```\n\n## Stop\n```bash\ndocker compose down\n```"
+    },
+    {
+      "path": "docs/dev-guide.md",
+      "content": "# Developer Guide\n\n## Architecture\n- **Mobile**: Kotlin (Android) / Angular (PWA)\n- **Backend**: C# / .NET\n- **CV**: OpenCV, PyTorch/TensorFlow\n- **Video**: FFmpeg\n- **Storage**: S3, Kafka, REST API\n\n## Flow\n1. Mobile uploads media + reference to backend.\n2. Backend queues job, calls CV service.\n3. CV detects creative, returns timestamps/similarity.\n4. FFmpeg cuts video (if applicable).\n5. Result saved to S3.\n6. Kafka event + REST callback sent.\n\n## Key Components\n- PhotoVerifier: quality check + template matching\n- VideoDetector: frame analysis for timestamps\n- VideoCutter: FFmpeg-based 15s extraction\n- IntegrationService: S3 upload + Kafka/REST notifications"
+    },
+    {
+      "path": "docs/product-description.md",
+      "content": "# Product Description\n\nAutomated system for recognizing, quality-checking, and verifying photo reports against reference templates, detecting and cutting 15-second ad clips from 150-300s video streams, and storing results in S3 with integration to adjacent systems via Kafka/REST API.\n\n## Goals\n- Automate photo report recognition and verification\n- Automate ad clip detection and cutting from video\n- Automatically store media files in S3 and link results to requests\n\n## Roles\n- Technical service employee: captures media, starts processing\n- Adjacent system: receives files in S3 and statuses via Kafka/REST"
+    }
+  ]
+}

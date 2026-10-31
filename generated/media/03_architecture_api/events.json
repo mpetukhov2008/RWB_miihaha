@@ -1,0 +1,62 @@
+[
+  {
+    "name": "ApplicationCreated",
+    "version": "1",
+    "payload": {
+      "application_id": "uuid",
+      "type": "photo|video",
+      "created_at": "datetime"
+    },
+    "idempotency_key": "application_id",
+    "description": "Создана новая заявка на обработку."
+  },
+  {
+    "name": "PhotoAnalysisCompleted",
+    "version": "1",
+    "payload": {
+      "application_id": "uuid",
+      "similarity_score": 0.0,
+      "status": "matches_template|does_not_match|low_quality",
+      "result_s3_key": "string"
+    },
+    "idempotency_key": "application_id",
+    "description": "Завершен анализ фотографии."
+  },
+  {
+    "name": "VideoAnalysisCompleted",
+    "version": "1",
+    "payload": {
+      "application_id": "uuid",
+      "segments": [
+        {
+          "start_time": 0.0,
+          "end_time": 15.0
+        }
+      ]
+    },
+    "idempotency_key": "application_id",
+    "description": "Завершен анализ видеопотока."
+  },
+  {
+    "name": "VideoCuttingCompleted",
+    "version": "1",
+    "payload": {
+      "application_id": "uuid",
+      "result_s3_key": "string",
+      "segments_processed": 0
+    },
+    "idempotency_key": "application_id",
+    "description": "Завершена нарезка видео."
+  },
+  {
+    "name": "ProcessingFailed",
+    "version": "1",
+    "payload": {
+      "application_id": "uuid",
+      "job_type": "string",
+      "error_message": "string"
+    },
+    "idempotency_key": "application_id",
+    "description": "Ошибка при обработке."
+  }
+]

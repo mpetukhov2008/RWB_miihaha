@@ -1,0 +1,208 @@
+[
+  {
+    "name": "Загрузка фотоотчета и эталонного макета",
+    "method": "POST",
+    "path": "/api/v1/photo-reports",
+    "cases": [
+      {
+        "title": "Happy path: успешная загрузка фото и макета, статус «Соответствует макету»",
+        "expected_status": 201,
+        "payload": {
+          "photo_file": "photo_report.jpg",
+          "reference_file": "reference_template.png",
+          "request_id": "REQ-12345"
+        }
+      },
+      {
+        "title": "Ошибка: файл фото не в формате JPEG/PNG",
+        "expected_status": 400,
+        "payload": {
+          "photo_file": "photo_report.bmp",
+          "reference_file": "reference_template.png",
+          "request_id": "REQ-12345"
+        }
+      },
+      {
+        "title": "Ошибка: отсутствует эталонный макет",
+        "expected_status": 400,
+        "payload": {
+          "photo_file": "photo_report.jpg",
+          "reference_file": null,
+          "request_id": "REQ-12345"
+        }
+      },
+      {
+        "title": "Ошибка: заявка не найдена",
+        "expected_status": 404,
+        "payload": {
+          "photo_file": "photo_report.jpg",
+          "reference_file": "reference_template.png",
+          "request_id": "REQ-99999"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Получение результата верификации фотоотчета",
+    "method": "GET",
+    "path": "/api/v1/photo-reports/{reportId}/result",
+    "cases": [
+      {
+        "title": "Happy path: результат верификации со статусом «Соответствует макету» и процентом схожести",
+        "expected_status": 200,
+        "payload": null
+      },
+      {
+        "title": "Happy path: результат верификации со статусом «Низкое качество»",
+        "expected_status": 200,
+        "payload": null
+      },
+      {
+        "title": "Ошибка: отчет не найден",
+        "expected_status": 404,
+        "payload": null
+      }
+    ]
+  },
+  {
+    "name": "Загрузка видеопотока и эталонного макета для анализа",
+    "method": "POST",
+    "path": "/api/v1/video-analysis",
+    "cases": [
+      {
+        "title": "Happy path: успешная загрузка видео 150 секунд и макета",
+        "expected_status": 201,
+        "payload": {
+          "video_file": "video_150s.mp4",
+          "reference_file": "reference_template.png",
+          "request_id": "REQ-12345"
+        }
+      },
+      {
+        "title": "Happy path: успешная загрузка видео 300 секунд с двумя разными роликами",
+        "expected_status": 201,
+        "payload": {
+          "video_file": "video_300s.mp4",
+          "reference_file": "reference_template.png",
+          "request_id": "REQ-12345"
+        }
+      },
+      {
+        "title": "Ошибка: длительность видео вне диапазона 150–300 секунд",
+        "expected_status": 400,
+        "payload": {
+          "video_file": "video_100s.mp4",
+          "reference_file": "reference_template.png",
+          "request_id": "REQ-12345"
+        }
+      },
+      {
+        "title": "Ошибка: файл видео не в формате MP4",
+        "expected_status": 400,
+        "payload": {
+          "video_file": "video_150s.avi",
+          "reference_file": "reference_template.png",
+          "request_id": "REQ-12345"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Получение отчета по временным меткам видеоролика",
+    "method": "GET",
+    "path": "/api/v1/video-analysis/{analysisId}/report",
+    "cases": [
+      {
+        "title": "Happy path: отчет с временными метками start_time и end_time",
+        "expected_status": 200,
+        "payload": null
+      },
+      {
+        "title": "Happy path: отчет с несколькими вхождениями целевого ролика",
+        "expected_status": 200,
+        "payload": null
+      },
+      {
+        "title": "Ошибка: анализ не найден",
+        "expected_status": 404,
+        "payload": null
+      }
+    ]
+  },
+  {
+    "name": "Запуск автоматической нарезки видео",
+    "method": "POST",
+    "path": "/api/v1/video-cuts",
+    "cases": [
+      {
+        "title": "Happy path: успешная нарезка 15-секундного фрагмента",
+        "expected_status": 201,
+        "payload": {
+          "analysis_id": "ANALYSIS-001",
+          "start_time": 45.0,
+          "end_time": 60.0,
+          "request_id": "REQ-12345"
+        }
+      },
+      {
+        "title": "Ошибка: временные метки некорректны (end_time < start_time)",
+        "expected_status": 400,
+        "payload": {
+          "analysis_id": "ANALYSIS-001",
+          "start_time": 60.0,
+          "end_time": 45.0,
+          "request_id": "REQ-12345"
+        }
+      },
+      {
+        "title": "Ошибка: длительность фрагмента не равна 15 секундам",
+        "expected_status": 400,
+        "payload": {
+          "analysis_id": "ANALYSIS-001",
+          "start_time": 45.0,
+          "end_time": 65.0,
+          "request_id": "REQ-12345"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Получение статуса нарезки и ссылки на итоговый файл",
+    "method": "GET",
+    "path": "/api/v1/video-cuts/{cutId}/status",
+    "cases": [
+      {
+        "title": "Happy path: статус «Выполнено» и ссылка на MP4 файл в S3",
+        "expected_status": 200,
+        "payload": null
+      },
+      {
+        "title": "Happy path: статус «В обработке»",
+        "expected_status": 200,
+        "payload": null
+      },
+      {
+        "title": "Ошибка: нарезка не найдена",
+        "expected_status": 404,
+        "payload": null
+      }
+    ]
+  },
+  {
+    "name": "Получение статуса интеграции с Kafka и S3",
+    "method": "GET",
+    "path": "/api/v1/integrations/status",
+    "cases": [
+      {
+        "title": "Happy path: статусы Kafka и S3 в норме",
+        "expected_status": 200,
+        "payload": null
+      },
+      {
+        "title": "Ошибка: недоступность Kafka",
+        "expected_status": 503,
+        "payload": null
+      }
+    ]
+  }
+]

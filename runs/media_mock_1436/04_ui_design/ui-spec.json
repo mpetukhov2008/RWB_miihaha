@@ -1,0 +1,98 @@
+{
+  "flows": [
+    {
+      "id": "FLOW-001",
+      "name": "Начало сессии",
+      "steps": [
+        "SCR-001",
+        "SCR-002"
+      ]
+    },
+    {
+      "id": "FLOW-002",
+      "name": "История",
+      "steps": [
+        "SCR-003"
+      ]
+    }
+  ],
+  "screens": [
+    {
+      "id": "SCR-001",
+      "title": "Карта зоны",
+      "requirement_ids": [
+        "FR-001"
+      ],
+      "states": {
+        "empty": "Нет данных о зоне",
+        "loading": "Определяем зону...",
+        "error": "Ошибка геолокации",
+        "forbidden": "",
+        "success": "Зона определена"
+      },
+      "actions": [
+        {
+          "id": "ACT-001",
+          "label": "Начать сессию",
+          "api_operation_id": "startSession",
+          "navigates_to": "SCR-002"
+        }
+      ]
+    },
+    {
+      "id": "SCR-002",
+      "title": "Активная сессия",
+      "requirement_ids": [
+        "FR-002",
+        "FR-003"
+      ],
+      "states": {
+        "empty": "",
+        "loading": "Загрузка сессии...",
+        "error": "Ошибка загрузки",
+        "forbidden": "",
+        "success": "Сессия активна"
+      },
+      "actions": [
+        {
+          "id": "ACT-002",
+          "label": "Завершить",
+          "api_operation_id": "completeSession",
+          "navigates_to": "SCR-003"
+        }
+      ]
+    },
+    {
+      "id": "SCR-003",
+      "title": "История",
+      "requirement_ids": [
+        "FR-004"
+      ],
+      "states": {
+        "empty": "Сессий пока нет",
+        "loading": "Загрузка истории...",
+        "error": "Ошибка загрузки",
+        "forbidden": "",
+        "success": "История загружена"
+      },
+      "actions": [
+        {
+          "id": "ACT-003",
+          "label": "Обновить",
+          "api_operation_id": "listSessions",
+          "navigates_to": null
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "SessionCard",
+      "description": "Карточка сессии"
+    },
+    {
+      "name": "ZoneMap",
+      "description": "Карта зоны"
+    }
+  ]
+}

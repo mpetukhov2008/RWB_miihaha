@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Media Processing API</title>
+  <link rel="stylesheet" href="swagger-ui.css">
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="swagger-ui-bundle.js"></script>
+  <script>
+    window.onload = () => {
+      window.ui = SwaggerUIBundle({
+        url: "../openapi.yaml",
+        dom_id: "#swagger-ui",
+      });
+    };
+  </script>
+</body>
+</html>

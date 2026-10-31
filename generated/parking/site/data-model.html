@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>parking — Модель данных</title>
+<style>body { font-family: system-ui, sans-serif; margin: 0; color: #1a1a2e; }
+header { background: #1976d2; color: #fff; padding: 16px 24px; }
+header h1 { margin: 0; font-size: 1.4rem; }
+nav { background: #eee; padding: 8px 24px; }
+nav a { margin-right: 16px; color: #1976d2; text-decoration: none; }
+main { max-width: 960px; margin: 0 auto; padding: 16px 24px; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+th { background: #f5f5f5; }
+code, pre { background: #f5f5f5; font-size: 0.9em; }
+pre { padding: 10px; overflow-x: auto; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; }
+.ok { background: #c8e6c9; } .fail { background: #ffcdd2; }</style>
+</head>
+<body>
+<header><h1>parking — Модель данных</h1></header>
+<nav><a href="index.html">parking</a><a href="requirements.html">Требования</a><a href="api.html">API</a><a href="data-model.html">Модель данных</a><a href="ui.html">Экраны</a><a href="traceability.html">Трассируемость</a><a href="reports.html">Отчёты</a></nav>
+<main><h2>Модель данных</h2><h3>User</h3><table><tr><th>Поле</th><th>Тип</th><th>Обязательное</th></tr><tr><td><code>id</code></td><td>string</td><td>да</td></tr><tr><td><code>email</code></td><td>string</td><td>да</td></tr><tr><td><code>role</code></td><td>string</td><td>да</td></tr><tr><td><code>created_at</code></td><td>datetime</td><td>да</td></tr></table><h3>ParkingZone</h3><table><tr><th>Поле</th><th>Тип</th><th>Обязательное</th></tr><tr><td><code>id</code></td><td>string</td><td>да</td></tr><tr><td><code>name</code></td><td>string</td><td>да</td></tr><tr><td><code>polygon</code></td><td>string</td><td>да</td></tr><tr><td><code>rate_per_hour</code></td><td>number</td><td>да</td></tr><tr><td><code>is_active</code></td><td>boolean</td><td>да</td></tr><tr><td><code>created_at</code></td><td>datetime</td><td>да</td></tr><tr><td><code>updated_at</code></td><td>datetime</td><td>—</td></tr></table><h3>ParkingSession</h3><table><tr><th>Поле</th><th>Тип</th><th>Обязательное</th></tr><tr><td><code>id</code></td><td>string</td><td>да</td></tr><tr><td><code>user_id</code></td><td>string</td><td>да</td></tr><tr><td><code>zone_id</code></td><td>string</td><td>да</td></tr><tr><td><code>started_at</code></td><td>datetime</td><td>да</td></tr><tr><td><code>ended_at</code></td><td>datetime</td><td>—</td></tr><tr><td><code>duration_minutes</code></td><td>integer</td><td>—</td></tr><tr><td><code>cost</code></td><td>number</td><td>—</td></tr><tr><td><code>status</code></td><td>string</td><td>да</td></tr><tr><td><code>created_at</code></td><td>datetime</td><td>да</td></tr></table><h3>Payment</h3><table><tr><th>Поле</th><th>Тип</th><th>Обязательное</th></tr><tr><td><code>id</code></td><td>string</td><td>да</td></tr><tr><td><code>session_id</code></td><td>string</td><td>да</td></tr><tr><td><code>amount</code></td><td>number</td><td>да</td></tr><tr><td><code>status</code></td><td>string</td><td>да</td></tr><tr><td><code>created_at</code></td><td>datetime</td><td>да</td></tr><tr><td><code>updated_at</code></td><td>datetime</td><td>—</td></tr></table><h3>Notification</h3><table><tr><th>Поле</th><th>Тип</th><th>Обязательное</th></tr><tr><td><code>id</code></td><td>string</td><td>да</td></tr><tr><td><code>user_id</code></td><td>string</td><td>да</td></tr><tr><td><code>session_id</code></td><td>string</td><td>да</td></tr><tr><td><code>type</code></td><td>string</td><td>да</td></tr><tr><td><code>message</code></td><td>string</td><td>да</td></tr><tr><td><code>sent_at</code></td><td>datetime</td><td>—</td></tr><tr><td><code>created_at</code></td><td>datetime</td><td>да</td></tr></table></main>
+</body>
+</html>

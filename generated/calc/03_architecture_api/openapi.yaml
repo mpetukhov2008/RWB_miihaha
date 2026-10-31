@@ -1,0 +1,66 @@
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+  description: Сгенерировано из системной модели
+paths:
+  /calculations:
+    post:
+      operationId: createCalculation
+      summary: Выполнить суммирование двух чисел
+      tags:
+      - calculations
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - NFR-001
+      - NFR-002
+      responses:
+        '400':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_number:
+                  type: number
+                  description: Первое число
+                second_number:
+                  type: number
+                  description: Второе число
+              required:
+              - first_number
+              - second_number
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string

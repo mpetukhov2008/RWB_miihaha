@@ -1,0 +1,9 @@
+{
+  "summary": "Детерминированный каркас frontend из ui-spec",
+  "files": [
+    {
+      "path": "screens/SCR_999/README.md",
+      "content": "# Экран-заглушка\n\nДополнительные экраны генерируются из ui-spec.json.\n"
+    }
+  ]
+}

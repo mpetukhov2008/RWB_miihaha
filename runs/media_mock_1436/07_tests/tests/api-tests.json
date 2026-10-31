@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Старт сессии",
+    "method": "post",
+    "path": "/sessions",
+    "cases": [
+      {
+        "title": "Успешный старт",
+        "expected_status": 201,
+        "payload": {
+          "zoneId": "z1"
+        }
+      },
+      {
+        "title": "Неверная зона",
+        "expected_status": 404,
+        "payload": {
+          "zoneId": "z2"
+        }
+      }
+    ]
+  }
+]

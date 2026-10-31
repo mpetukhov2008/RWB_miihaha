@@ -1,0 +1,131 @@
+{
+  "entities": [
+    {
+      "name": "Calculation",
+      "description": "Сущность, представляющая операцию суммирования двух чисел",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Уникальный идентификатор операции"
+        },
+        {
+          "name": "first_number",
+          "type": "number",
+          "required": true,
+          "description": "Первое число для суммирования"
+        },
+        {
+          "name": "second_number",
+          "type": "number",
+          "required": true,
+          "description": "Второе число для суммирования"
+        },
+        {
+          "name": "result",
+          "type": "number",
+          "required": true,
+          "description": "Результат суммирования"
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "required": true,
+          "description": "Время создания операции"
+        }
+      ],
+      "indexes": [
+        "id"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "CalculationCompleted",
+      "version": "1",
+      "payload": {
+        "calculation_id": "string",
+        "first_number": 0,
+        "second_number": 0,
+        "result": 0,
+        "timestamp": "datetime"
+      },
+      "idempotency_key": "calculation_id",
+      "description": "Событие успешного завершения операции суммирования"
+    },
+    {
+      "name": "CalculationFailed",
+      "version": "1",
+      "payload": {
+        "calculation_id": "string",
+        "error_message": "string",
+        "timestamp": "datetime"
+      },
+      "idempotency_key": "calculation_id",
+      "description": "Событие ошибки при обработке операции суммирования"
+    }
+  ],
+  "operations": [
+    {
+      "method": "post",
+      "path": "/calculations",
+      "operationId": "createCalculation",
+      "summary": "Выполнить суммирование двух чисел",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "first_number": {
+            "type": "number",
+            "description": "Первое число"
+          },
+          "second_number": {
+            "type": "number",
+            "description": "Второе число"
+          }
+        },
+        "required": [
+          "first_number",
+          "second_number"
+        ]
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID операции"
+          },
+          "first_number": {
+            "type": "number"
+          },
+          "second_number": {
+            "type": "number"
+          },
+          "result": {
+            "type": "number"
+          },
+          "created_at": {
+            "type": "datetime"
+          }
+        }
+      },
+      "errors": [
+        "400",
+        "500"
+      ],
+      "auth": false,
+      "tags": [
+        "calculations"
+      ],
+      "requirement_ids": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "NFR-001",
+        "NFR-002"
+      ],
+      "error_schema": "ProblemDetails"
+    }
+  ]
+}

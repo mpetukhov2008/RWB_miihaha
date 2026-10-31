@@ -1,0 +1,17 @@
+{
+  "summary": "Секретов в репозитории нет; JWT и rate limit настроены.",
+  "findings": [
+    {
+      "severity": "info",
+      "title": "JWT signing key по умолчанию",
+      "description": "В dev-конфигурации ключ задаётся через переменную окружения; в проде — через CI variables.",
+      "status": "mitigated"
+    },
+    {
+      "severity": "low",
+      "title": "Rate limit 100 req/min — единый для всех",
+      "description": "Для админ-операций можно ужесточить лимит.",
+      "status": "open"
+    }
+  ]
+}

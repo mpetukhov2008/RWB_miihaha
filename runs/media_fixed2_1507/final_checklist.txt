@@ -1,0 +1,42 @@
+=== 1. СВОДКА ПРОГОНА ===
+01_requirements          done    
+02_system_analysis       done    
+03_architecture_api      done    
+04_ui_design             done    
+05_codegen_backend       done    
+06_codegen_frontend      done    
+07_tests                 done    
+08_security_report       done    
+09_docs                  done    
+
+=== 2. API-ДОКУМЕНТАЦИЯ: /tmp/api-docs.html ===
+-rw-rw-r-- 1 team20 team20 268312 Oct 31 15:29 /tmp/api-docs.html
+
+=== 3. ВАЛИДАЦИЯ API (redocly lint) ===
+Woohoo! Your API description is valid. 🎉
+You have 1 warning.
+
+
+=== 4. ЭНДПОИНТЫ ===
+  POST   /applications                            ['FR-001', 'FR-002', 'FR-003', 'FR-004']
+  GET    /applications/{id}                       ['FR-001', 'FR-002', 'FR-003', 'FR-004']
+  POST   /files/upload-url                        ['FR-001', 'FR-002', 'FR-003', 'FR-004']
+  POST   /files/{id}/confirm                      ['FR-001', 'FR-002', 'FR-003', 'FR-004']
+  POST   /applications/{id}/process               ['FR-001', 'FR-002', 'FR-003']
+  GET    /applications/{id}/segments              ['FR-002', 'FR-003']
+  GET    /files/{id}/download-url                 ['FR-004']
+
+=== 5. BACKEND (.NET) ===
+  файлов .cs: 20
+
+=== 6. FRONTEND (Angular) ===
+  файлов .ts: 13
+
+=== 7. ТЕСТЫ ===
+api-tests.json
+e2e-tests.json
+test-report.md
+
+=== 8. ДОКУМЕНТАЦИЯ ===
+docs
+README.md

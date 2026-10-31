@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>parking — API</title>
+<style>body { font-family: system-ui, sans-serif; margin: 0; color: #1a1a2e; }
+header { background: #1976d2; color: #fff; padding: 16px 24px; }
+header h1 { margin: 0; font-size: 1.4rem; }
+nav { background: #eee; padding: 8px 24px; }
+nav a { margin-right: 16px; color: #1976d2; text-decoration: none; }
+main { max-width: 960px; margin: 0 auto; padding: 16px 24px; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+th { background: #f5f5f5; }
+code, pre { background: #f5f5f5; font-size: 0.9em; }
+pre { padding: 10px; overflow-x: auto; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; }
+.ok { background: #c8e6c9; } .fail { background: #ffcdd2; }</style>
+</head>
+<body>
+<header><h1>parking — API</h1></header>
+<nav><a href="index.html">parking</a><a href="requirements.html">Требования</a><a href="api.html">API</a><a href="data-model.html">Модель данных</a><a href="ui.html">Экраны</a><a href="traceability.html">Трассируемость</a><a href="reports.html">Отчёты</a></nav>
+<main><h2>Операции API</h2><table><tr><th>Метод</th><th>Путь</th><th>Описание</th><th>operationId</th></tr><tr><td><code>POST</code></td><td><code>/auth/login</code></td><td>Аутентификация пользователя. </td><td><code>login</code></td></tr><tr><td><code>GET</code></td><td><code>/zones/nearby</code></td><td>Определение платной зоны по геолокации. 🔒</td><td><code>getNearbyZone</code></td></tr><tr><td><code>POST</code></td><td><code>/sessions</code></td><td>Начать парковочную сессию. 🔒</td><td><code>startSession</code></td></tr><tr><td><code>GET</code></td><td><code>/sessions/active</code></td><td>Получить активную сессию текущего водителя. 🔒</td><td><code>getActiveSession</code></td></tr><tr><td><code>POST</code></td><td><code>/sessions/{session_id}/end</code></td><td>Завершить парковочную сессию. 🔒</td><td><code>endSession</code></td></tr><tr><td><code>GET</code></td><td><code>/sessions/history</code></td><td>История парковочных сессий водителя. 🔒</td><td><code>getSessionHistory</code></td></tr><tr><td><code>GET</code></td><td><code>/notifications</code></td><td>Список уведомлений текущего водителя. 🔒</td><td><code>getNotifications</code></td></tr><tr><td><code>GET</code></td><td><code>/admin/zones</code></td><td>Список всех зон (админ). 🔒</td><td><code>adminListZones</code></td></tr><tr><td><code>POST</code></td><td><code>/admin/zones</code></td><td>Создать зону (админ). 🔒</td><td><code>adminCreateZone</code></td></tr><tr><td><code>PUT</code></td><td><code>/admin/zones/{zone_id}</code></td><td>Редактировать зону (админ). 🔒</td><td><code>adminUpdateZone</code></td></tr><tr><td><code>GET</code></td><td><code>/admin/sessions</code></td><td>Список активных сессий (админ). 🔒</td><td><code>adminListSessions</code></td></tr><tr><td><code>GET</code></td><td><code>/admin/sessions/history</code></td><td>История сессий по зоне (админ). 🔒</td><td><code>adminSessionHistory</code></td></tr></table></main>
+</body>
+</html>

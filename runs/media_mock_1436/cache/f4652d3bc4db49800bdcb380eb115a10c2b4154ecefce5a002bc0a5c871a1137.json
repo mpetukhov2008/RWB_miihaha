@@ -1,0 +1,9 @@
+{
+  "summary": "Детерминированный каркас backend из OpenAPI",
+  "files": [
+    {
+      "path": "Services/SessionService.cs",
+      "content": "namespace Generated.Api.Services;\n\n/// <summary>Сервис сессий (заглушка, заменяется генератором).</summary>\npublic static class SessionService\n{\n    public static string Describe() => \"SessionService\";\n}\n"
+    }
+  ]
+}

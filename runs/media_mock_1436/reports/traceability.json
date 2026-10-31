@@ -1,0 +1,73 @@
+{
+  "FR-001": {
+    "api": [
+      "getZone",
+      "startSession"
+    ],
+    "ui": [
+      "SCR-001"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-002": {
+    "api": [
+      "startSession",
+      "completeSession"
+    ],
+    "ui": [
+      "SCR-002"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-003": {
+    "api": [],
+    "ui": [
+      "SCR-002"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-004": {
+    "api": [
+      "listSessions"
+    ],
+    "ui": [
+      "SCR-003"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-005": {
+    "api": [
+      "startSession",
+      "completeSession"
+    ],
+    "ui": [],
+    "tests": [],
+    "docs": []
+  },
+  "FR-006": {
+    "api": [
+      "createZone"
+    ],
+    "ui": [],
+    "tests": [],
+    "docs": []
+  },
+  "NFR-001": {
+    "api": [],
+    "ui": [],
+    "tests": [],
+    "docs": []
+  },
+  "NFR-002": {
+    "api": [
+      "createZone"
+    ],
+    "ui": [],
+    "tests": [],
+    "docs": []
+  }
+}

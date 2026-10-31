@@ -46,14 +46,30 @@ class CodegenFrontendAgent(BaseAgent[dict[str, Any]]):
         return self._FILE_SCHEMA
 
     def build_user_prompt(self, inputs: dict[str, Any]) -> str:
-        """Собрать user-промпт: ui-spec + operations + схема."""
-        ui = inputs.get("ui_spec", {})
-        arch = inputs.get("architecture", {})
+        """Собрать user-промпт: ui-spec (урезанный) + operations + схема.
+
+        Каркас строится детерминированно в validate(); от LLM нужны только
+        небольшие дополнения, поэтому промпт намеренно ограничен по объёму.
+        """
+        ui = inputs.get("ui_spec", {}) or {}
+        arch = inputs.get("architecture", {}) or {}
+        # Урезаем ui-spec: только первые 3 экрана/флоу — этого достаточно,
+        # чтобы модель не упиралась в лимит вывода и не обрывала JSON.
+        screens = (ui.get("screens") or [])[:3]
+        flows = (ui.get("flows") or [])[:2]
+        ui_slim = {"flows": flows, "screens": screens}
         schema = json.dumps(self.json_schema(), ensure_ascii=False, indent=2)
         return (
-            "Ниже — ui-spec. Сгенерируй Angular-файлы.\n\n"
-            f"=== UI-SPEC.JSON ===\n{json.dumps(ui, ensure_ascii=False, indent=2)}\n\n"
-            f"=== OPERATIONS ===\n{json.dumps(arch.get('operations', []), ensure_ascii=False, indent=2)}\n\n"
+            "Сгенерируй НЕБОЛЬШОЕ дополнение к Angular-каркасу.\n"
+            "Правила (строго):\n"
+            "- Не более 5 файлов в files.\n"
+            "- Каждый файл — не более 80 строк.\n"
+            "- Без стилей, без тестов, без конфигов, без package.json.\n"
+            "- Только то, что дополняет каркас (компоненты экранов/сервис).\n"
+            "- Ответ — ОДИН валидный JSON-объект, обязательно закрой все строки и скобки.\n"
+            "- Если не влезаешь — сократи число файлов, но JSON должен быть валидным.\n\n"
+            f"=== UI-SPEC (сокращённый) ===\n{json.dumps(ui_slim, ensure_ascii=False)}\n\n"
+            f"=== OPERATIONS (первые 10) ===\n{json.dumps((arch.get('operations') or [])[:10], ensure_ascii=False)}\n\n"
             f"=== JSON SCHEMA ОТВЕТА ===\n{schema}\n"
         )
 

@@ -1,0 +1,4 @@
+{"ts": 1793383119.9521306, "stage": "01_requirements", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 3562, "tokens_out": 1950, "latency_ms": 31867, "status": "ok"}
+{"ts": 1793383154.3385065, "stage": "02_system_analysis", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 3528, "tokens_out": 2177, "latency_ms": 34379, "status": "ok"}
+{"ts": 1793383273.2796898, "stage": "03_architecture_api", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 4044, "tokens_out": 6630, "latency_ms": 118928, "status": "ok"}
+{"ts": 1793389413.548848, "stage": "04_ui_design", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 7778, "tokens_out": 3342, "latency_ms": 59897, "status": "ok"}

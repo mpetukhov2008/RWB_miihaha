@@ -1,0 +1,72 @@
+{
+  "run_id": "media",
+  "stages": {
+    "01_requirements": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:22:38.513931+00:00",
+      "gates": {
+        "schema": "ok",
+        "unique_ids": "ok",
+        "questions_limit": "ok",
+        "blocking_limit": "ok",
+        "acceptance_criteria": "ok",
+        "has_must": "ok"
+      },
+      "finished_at": "2026-10-31T11:23:25.156917+00:00"
+    },
+    "02_system_analysis": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:23:40.920409+00:00",
+      "gates": {
+        "schema": "ok",
+        "scenarios_nonempty": "ok",
+        "actors_defined": "ok"
+      },
+      "finished_at": "2026-10-31T11:24:19.508217+00:00"
+    },
+    "03_architecture_api": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:24:19.508431+00:00",
+      "gates": {
+        "schema": "ok",
+        "operation_ids": "ok",
+        "tags_defined": "ok",
+        "error_format": "ok",
+        "must_coverage": "fail"
+      },
+      "finished_at": "2026-10-31T11:25:42.666555+00:00"
+    },
+    "04_ui_design": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:29:01.604730+00:00",
+      "gates": {
+        "schema": "ok",
+        "screens_states": "ok",
+        "actions_valid": "ok",
+        "screens_nonempty": "ok"
+      },
+      "finished_at": "2026-10-31T11:29:53.642009+00:00"
+    },
+    "05_codegen_backend": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:29:53.642280+00:00",
+      "gates": {
+        "schema": "ok",
+        "files_nonempty": "ok",
+        "controllers_generated": "ok"
+      },
+      "finished_at": "2026-10-31T11:31:46.986821+00:00"
+    },
+    "06_codegen_frontend": {
+      "status": "running",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:35:47.667554+00:00"
+    }
+  },
+  "created_at": "2026-10-31T11:21:22.311443+00:00"
+}

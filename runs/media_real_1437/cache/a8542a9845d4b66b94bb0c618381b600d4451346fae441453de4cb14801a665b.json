@@ -1,0 +1,249 @@
+{
+  "flows": [
+    {
+      "id": "FLOW-001",
+      "name": "Создание заявки на обработку фото",
+      "steps": [
+        "SCR-001",
+        "SCR-002",
+        "SCR-003",
+        "SCR-004"
+      ]
+    },
+    {
+      "id": "FLOW-002",
+      "name": "Создание заявки на обработку видео",
+      "steps": [
+        "SCR-001",
+        "SCR-002",
+        "SCR-003",
+        "SCR-005"
+      ]
+    },
+    {
+      "id": "FLOW-003",
+      "name": "Просмотр списка заявок и статусов",
+      "steps": [
+        "SCR-001",
+        "SCR-004"
+      ]
+    },
+    {
+      "id": "FLOW-004",
+      "name": "Принудительный запуск обработки",
+      "steps": [
+        "SCR-001",
+        "SCR-004",
+        "SCR-003"
+      ]
+    }
+  ],
+  "screens": [
+    {
+      "id": "SCR-001",
+      "title": "Главный экран / Список заявок",
+      "requirement_ids": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004"
+      ],
+      "states": {
+        "empty": "Список заявок пуст. Показывается CTA «Создать заявку».",
+        "loading": "Показывается спиннер загрузки списка заявок.",
+        "error": "Ошибка загрузки списка. Кнопка «Повторить».",
+        "forbidden": "Нет доступа. Требуется авторизация.",
+        "success": "Список заявок с типом, статусом и датой создания."
+      },
+      "actions": [
+        {
+          "id": "ACT-001",
+          "label": "Создать заявку",
+          "api_operation_id": null,
+          "navigates_to": "SCR-002"
+        },
+        {
+          "id": "ACT-002",
+          "label": "Открыть заявку",
+          "api_operation_id": "getApplication",
+          "navigates_to": "SCR-004"
+        }
+      ]
+    },
+    {
+      "id": "SCR-002",
+      "title": "Выбор типа заявки и загрузка файлов",
+      "requirement_ids": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004"
+      ],
+      "states": {
+        "empty": "Файлы не выбраны. Показаны слоты для эталонного макета и исходного файла.",
+        "loading": "Загрузка файлов в S3. Показывается прогресс-бар.",
+        "error": "Ошибка загрузки файла. Кнопка «Повторить».",
+        "forbidden": "Нет доступа. Требуется авторизация.",
+        "success": "Файлы загружены и подтверждены. Кнопка «Создать заявку» активна."
+      },
+      "actions": [
+        {
+          "id": "ACT-003",
+          "label": "Выбрать эталонный макет",
+          "api_operation_id": "getUploadUrl",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-004",
+          "label": "Выбрать исходный файл",
+          "api_operation_id": "getUploadUrl",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-005",
+          "label": "Подтвердить загрузку",
+          "api_operation_id": "confirmFileUpload",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-006",
+          "label": "Создать заявку",
+          "api_operation_id": "createApplication",
+          "navigates_to": "SCR-003"
+        }
+      ]
+    },
+    {
+      "id": "SCR-003",
+      "title": "Подтверждение создания заявки",
+      "requirement_ids": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004"
+      ],
+      "states": {
+        "empty": "Не используется.",
+        "loading": "Заявка создаётся. Показывается спиннер.",
+        "error": "Ошибка создания заявки. Кнопка «Повторить».",
+        "forbidden": "Нет доступа. Требуется авторизация.",
+        "success": "Заявка создана. Показывается ID и статус. Кнопка «Перейти к заявке»."
+      },
+      "actions": [
+        {
+          "id": "ACT-007",
+          "label": "Перейти к заявке",
+          "api_operation_id": null,
+          "navigates_to": "SCR-004"
+        },
+        {
+          "id": "ACT-008",
+          "label": "На главную",
+          "api_operation_id": null,
+          "navigates_to": "SCR-001"
+        }
+      ]
+    },
+    {
+      "id": "SCR-004",
+      "title": "Детали заявки (фото)",
+      "requirement_ids": [
+        "FR-001",
+        "FR-004"
+      ],
+      "states": {
+        "empty": "Результат анализа ещё не готов. Показывается статус «В обработке».",
+        "loading": "Загрузка деталей заявки и результата анализа.",
+        "error": "Ошибка загрузки. Кнопка «Повторить».",
+        "forbidden": "Нет доступа. Требуется авторизация.",
+        "success": "Показаны статус, процент схожести, статус качества и соответствия."
+      },
+      "actions": [
+        {
+          "id": "ACT-009",
+          "label": "Загрузить результат анализа",
+          "api_operation_id": "getPhotoAnalysisResult",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-010",
+          "label": "Запустить обработку принудительно",
+          "api_operation_id": "triggerProcessing",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-011",
+          "label": "Назад к списку",
+          "api_operation_id": null,
+          "navigates_to": "SCR-001"
+        }
+      ]
+    },
+    {
+      "id": "SCR-005",
+      "title": "Детали заявки (видео)",
+      "requirement_ids": [
+        "FR-002",
+        "FR-003",
+        "FR-004"
+      ],
+      "states": {
+        "empty": "Результат анализа ещё не готов. Показывается статус «В обработке».",
+        "loading": "Загрузка деталей заявки и результата анализа.",
+        "error": "Ошибка загрузки. Кнопка «Повторить».",
+        "forbidden": "Нет доступа. Требуется авторизация.",
+        "success": "Показаны временные метки сегментов и ссылки на вырезанные ролики."
+      },
+      "actions": [
+        {
+          "id": "ACT-012",
+          "label": "Загрузить результат анализа",
+          "api_operation_id": "getVideoAnalysisResult",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-013",
+          "label": "Запустить обработку принудительно",
+          "api_operation_id": "triggerProcessing",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-014",
+          "label": "Назад к списку",
+          "api_operation_id": null,
+          "navigates_to": "SCR-001"
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "ApplicationCard",
+      "description": "Карточка заявки в списке: тип, статус, дата создания."
+    },
+    {
+      "name": "FileUploadSlot",
+      "description": "Слот для выбора и загрузки файла с прогресс-баром."
+    },
+    {
+      "name": "StatusBadge",
+      "description": "Бейдж статуса заявки или результата анализа."
+    },
+    {
+      "name": "ProgressBar",
+      "description": "Прогресс-бар загрузки файла или обработки."
+    },
+    {
+      "name": "SegmentTimeline",
+      "description": "Визуализация временных меток сегментов видео."
+    },
+    {
+      "name": "ErrorBanner",
+      "description": "Баннер ошибки с кнопкой «Повторить»."
+    },
+    {
+      "name": "EmptyState",
+      "description": "Пустое состояние экрана с CTA."
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+╭─────────────────────────────────────────── Traceback (most recent call last) ────────────────────────────────────────────╮
+│ /home/team20/miiaha/pipeline/llm/client.py:325 in _parse_json                                                            │
+│                                                                                                                          │
+│   322 │   │   """                                                                                                        │
+│   323 │   │   text = self._strip_markdown_fence(content)                                                                 │
+│   324 │   │   try:                                                                                                       │
+│ ❱ 325 │   │   │   data = json.loads(text)                                                                                │
+│   326 │   │   except json.JSONDecodeError as exc:                                                                        │
+│   327 │   │   │   raise LLMUnavailable(f"Ответ модели не является JSON: {exc}") from exc                                 │
+│   328 │   │   if not isinstance(data, dict):                                                                             │
+│                                                                                                                          │
+│ /usr/lib/python3.13/json/__init__.py:346 in loads                                                                        │
+│                                                                                                                          │
+│   343 │   if (cls is None and object_hook is None and                                                                    │
+│   344 │   │   │   parse_int is None and parse_float is None and                                                          │
+│   345 │   │   │   parse_constant is None and object_pairs_hook is None and not kw):                                      │
+│ ❱ 346 │   │   return _default_decoder.decode(s)                                                                          │
+│   347 │   if cls is None:                                                                                                │
+│   348 │   │   cls = JSONDecoder                                                                                          │
+│   349 │   if object_hook is not None:                                                                                    │
+│                                                                                                                          │
+│ /usr/lib/python3.13/json/decoder.py:345 in decode                                                                        │
+│                                                                                                                          │
+│   342 │   │   containing a JSON document).                                                                               │
+│   343 │   │                                                                                                              │
+│   344 │   │   """                                                                                                        │
+│ ❱ 345 │   │   obj, end = self.raw_decode(s, idx=_w(s, 0).end())                                                          │
+│   346 │   │   end = _w(s, end).end()                                                                                     │
+│   347 │   │   if end != len(s):                                                                                          │
+│   348 │   │   │   raise JSONDecodeError("Extra data", s, end)                                                            │
+│                                                                                                                          │
+│ /usr/lib/python3.13/json/decoder.py:361 in raw_decode                                                                    │
+│                                                                                                                          │
+│   358 │   │                                                                                                              │
+│   359 │   │   """                                                                                                        │
+│   360 │   │   try:                                                                                                       │
+│ ❱ 361 │   │   │   obj, end = self.scan_once(s, idx)                                                                      │
+│   362 │   │   except StopIteration as err:                                                                               │
+│   363 │   │   │   raise JSONDecodeError("Expecting value", s, err.value) from None                                       │
+│   364 │   │   return obj, end                                                                                            │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+JSONDecodeError: Unterminated string starting at: line 54 column 18 (char 20540)
+
+The above exception was the direct cause of the following exception:
+
+╭─────────────────────────────────────────── Traceback (most recent call last) ────────────────────────────────────────────╮
+│ /home/team20/miiaha/pipeline/orchestrator/orchestrator.py:167 in run_pipeline                                            │
+│                                                                                                                          │
+│   164 │   │                                                                                                              │
+│   165 │   │   inputs = _build_inputs(run_dir, initial)                                                                   │
+│   166 │   │   try:                                                                                                       │
+│ ❱ 167 │   │   │   result: AgentResult = agent.run(inputs)                                                                │
+│   168 │   │   except Exception as exc:  # noqa: BLE001                                                                   │
+│   169 │   │   │   state.fail_stage(stage_name, str(exc))                                                                 │
+│   170 │   │   │   raise StageFailed(f"Этап {stage_name!r} упал: {exc}") from exc                                         │
+│                                                                                                                          │
+│ /home/team20/miiaha/pipeline/agents/base.py:116 in run                                                                   │
+│                                                                                                                          │
+│   113 │   │   │   if last_error is not None:                                                                             │
+│   114 │   │   │   │   prompt = self._retry_hint(prompt, last_error)                                                      │
+│   115 │   │   │   try:                                                                                                   │
+│ ❱ 116 │   │   │   │   data = self.llm.complete_json(                                                                     │
+│   117 │   │   │   │   │   stage=self.name,                                                                               │
+│   118 │   │   │   │   │   prompt_version=self.prompt_version,                                                            │
+│   119 │   │   │   │   │   system_prompt=self.system_prompt,                                                              │
+│                                                                                                                          │
+│ /home/team20/miiaha/pipeline/llm/client.py:215 in complete_json                                                          │
+│                                                                                                                          │
+│   212 │   │   for network_attempt in range(1, LLM_NETWORK_RETRIES + 1):                                                  │
+│   213 │   │   │   try:                                                                                                   │
+│   214 │   │   │   │   started = time.monotonic()                                                                         │
+│ ❱ 215 │   │   │   │   data = self._call(                                                                                 │
+│   216 │   │   │   │   │   system_prompt=system_prompt,                                                                   │
+│   217 │   │   │   │   │   user_prompt=user_prompt,                                                                       │
+│   218 │   │   │   │   )                                                                                                  │
+│                                                                                                                          │
+│ /home/team20/miiaha/pipeline/llm/client.py:305 in _call                                                                  │
+│                                                                                                                          │
+│   302 │   │   content = response.choices[0].message.content or ""                                                        │
+│   303 │   │   usage = response.usage                                                                                     │
+│   304 │   │   return _OpenAIResponse(                                                                                    │
+│ ❱ 305 │   │   │   content=self._parse_json(content),                                                                     │
+│   306 │   │   │   tokens_in=usage.prompt_tokens if usage else 0,                                                         │
+│   307 │   │   │   tokens_out=usage.completion_tokens if usage else 0,                                                    │
+│   308 │   │   │   model=response.model,                                                                                  │
+│                                                                                                                          │
+│ /home/team20/miiaha/pipeline/llm/client.py:327 in _parse_json                                                            │
+│                                                                                                                          │
+│   324 │   │   try:                                                                                                       │
+│   325 │   │   │   data = json.loads(text)                                                                                │
+│   326 │   │   except json.JSONDecodeError as exc:                                                                        │
+│ ❱ 327 │   │   │   raise LLMUnavailable(f"Ответ модели не является JSON: {exc}") from exc                                 │
+│   328 │   │   if not isinstance(data, dict):                                                                             │
+│   329 │   │   │   raise LLMUnavailable("Ответ модели — не JSON-объект")                                                  │
+│   330 │   │   return data                                                                                                │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+LLMUnavailable: Ответ модели не является JSON: Unterminated string starting at: line 54 column 18 (char 20540)
+
+The above exception was the direct cause of the following exception:
+
+╭─────────────────────────────────────────── Traceback (most recent call last) ────────────────────────────────────────────╮
+│ /home/team20/miiaha/pipeline/main.py:94 in run                                                                           │
+│                                                                                                                          │
+│    91 │   # чтобы `pipeline --help` работал без установленных зависимостей LLM.                                          │
+│    92 │   from pipeline.orchestrator.orchestrator import run_pipeline                                                    │
+│    93 │                                                                                                                  │
+│ ❱  94 │   result = run_pipeline(                                                                                         │
+│    95 │   │   run_dir=out_dir,                                                                                           │
+│    96 │   │   requirements_md=requirements_md,                                                                           │
+│    97 │   │   answers=answers_data,                                                                                      │
+│                                                                                                                          │
+│ /home/team20/miiaha/pipeline/orchestrator/orchestrator.py:170 in run_pipeline                                            │
+│                                                                                                                          │
+│   167 │   │   │   result: AgentResult = agent.run(inputs)                                                                │
+│   168 │   │   except Exception as exc:  # noqa: BLE001                                                                   │
+│   169 │   │   │   state.fail_stage(stage_name, str(exc))                                                                 │
+│ ❱ 170 │   │   │   raise StageFailed(f"Этап {stage_name!r} упал: {exc}") from exc                                         │
+│   171 │   │                                                                                                              │
+│   172 │   │   # Question Gate: blocking-вопросы останавливают прогон.                                                    │
+│   173 │   │   if result.questions_blocking > 0:                                                                          │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+StageFailed: Этап '06_codegen_frontend' упал: Ответ модели не является JSON: Unterminated string starting at: line 54 column
+18 (char 20540)

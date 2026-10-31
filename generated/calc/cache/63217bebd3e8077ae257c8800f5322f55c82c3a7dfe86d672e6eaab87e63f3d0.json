@@ -1,0 +1,33 @@
+{
+  "summary": "Сгенерирован backend для операции суммирования двух чисел: контроллер, DTO, сервис, in-memory хранилище и сущность.",
+  "files": [
+    {
+      "path": "controllers/CalculationsController.cs",
+      "content": "using Microsoft.AspNetCore.Mvc;\nusing System.ComponentModel.DataAnnotations;\nusing System.Text.Json;\nusing System.Text.Json.Serialization;\n\nnamespace Api.Controllers;\n\n[ApiController]\n[Route(\"calculations\")]\npublic class CalculationsController : ControllerBase\n{\n    private readonly CalculationService _calculationService;\n\n    public CalculationsController(CalculationService calculationService)\n    {\n        _calculationService = calculationService;\n    }\n\n    [HttpPost]\n    [ProducesResponseType(typeof(CalculationResponse), StatusCodes.Status200OK)]\n    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]\n    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]\n    public async Task<IActionResult> CreateCalculation([FromBody] CreateCalculationRequest request)\n    {\n        if (request is null || request.FirstNumber is null || request.SecondNumber is null)\n        {\n            return BadRequest(new ProblemDetails\n            {\n                Type = \"https://tools.ietf.org/html/rfc9457\",\n                Title = \"Bad Request\",\n                Status = StatusCodes.Status400BadRequest,\n                Detail = \"Поля first_number и second_number обязательны.\",\n                Instance = \"/calculations\"\n            });\n        }\n\n        try\n        {\n            var result = await _calculationService.CreateCalculationAsync(request.FirstNumber.Value, request.SecondNumber.Value);\n            return Ok(result);\n        }\n        catch (InvalidOperationException ex)\n        {\n            return BadRequest(new ProblemDetails\n            {\n                Type = \"https://tools.ietf.org/html/rfc9457\",\n                Title = \"Bad Request\",\n                Status = StatusCodes.Status400BadRequest,\n                Detail = ex.Message,\n                Instance = \"/calculations\"\n            });\n        }\n        catch (Exception ex)\n        {\n            return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails\n            {\n                Type = \"https://tools.ietf.org/html/rfc9457\",\n                Title = \"Internal Server Error\",\n                Status = StatusCodes.Status500InternalServerError,\n                Detail = ex.Message,\n                Instance = \"/calculations\"\n            });\n        }\n    }\n}\n"
+    },
+    {
+      "path": "dtos/CreateCalculationRequest.cs",
+      "content": "using System.Text.Json.Serialization;\n\nnamespace Api.Dtos;\n\npublic class CreateCalculationRequest\n{\n    [JsonPropertyName(\"first_number\")]\n    public decimal? FirstNumber { get; set; }\n\n    [JsonPropertyName(\"second_number\")]\n    public decimal? SecondNumber { get; set; }\n}\n"
+    },
+    {
+      "path": "dtos/CalculationResponse.cs",
+      "content": "using System.Text.Json.Serialization;\n\nnamespace Api.Dtos;\n\npublic class CalculationResponse\n{\n    [JsonPropertyName(\"id\")]\n    public string Id { get; set; } = string.Empty;\n\n    [JsonPropertyName(\"first_number\")]\n    public decimal FirstNumber { get; set; }\n\n    [JsonPropertyName(\"second_number\")]\n    public decimal SecondNumber { get; set; }\n\n    [JsonPropertyName(\"result\")]\n    public decimal Result { get; set; }\n\n    [JsonPropertyName(\"created_at\")]\n    public DateTime CreatedAt { get; set; }\n}\n"
+    },
+    {
+      "path": "dtos/ProblemDetails.cs",
+      "content": "using System.Text.Json.Serialization;\n\nnamespace Api.Dtos;\n\npublic class ProblemDetails\n{\n    [JsonPropertyName(\"type\")]\n    public string? Type { get; set; }\n\n    [JsonPropertyName(\"title\")]\n    public string? Title { get; set; }\n\n    [JsonPropertyName(\"status\")]\n    public int? Status { get; set; }\n\n    [JsonPropertyName(\"detail\")]\n    public string? Detail { get; set; }\n\n    [JsonPropertyName(\"instance\")]\n    public string? Instance { get; set; }\n}\n"
+    },
+    {
+      "path": "services/CalculationService.cs",
+      "content": "using Api.Entities;\nusing Api.Dtos;\n\nnamespace Api.Services;\n\npublic class CalculationService\n{\n    private readonly InMemoryCalculationStore _store;\n\n    public CalculationService(InMemoryCalculationStore store)\n    {\n        _store = store;\n    }\n\n    public Task<CalculationResponse> CreateCalculationAsync(decimal firstNumber, decimal secondNumber)\n    {\n        var calculation = new Calculation\n        {\n            Id = Guid.NewGuid().ToString(),\n            FirstNumber = firstNumber,\n            SecondNumber = secondNumber,\n            Result = firstNumber + secondNumber,\n            CreatedAt = DateTime.UtcNow\n        };\n\n        _store.Add(calculation);\n\n        return Task.FromResult(new CalculationResponse\n        {\n            Id = calculation.Id,\n            FirstNumber = calculation.FirstNumber,\n            SecondNumber = calculation.SecondNumber,\n            Result = calculation.Result,\n            CreatedAt = calculation.CreatedAt\n        });\n    }\n}\n"
+    },
+    {
+      "path": "services/InMemoryCalculationStore.cs",
+      "content": "using Api.Entities;\n\nnamespace Api.Services;\n\npublic class InMemoryCalculationStore\n{\n    private readonly List<Calculation> _calculations = new();\n    private readonly object _lock = new();\n\n    public void Add(Calculation calculation)\n    {\n        lock (_lock)\n        {\n            _calculations.Add(calculation);\n        }\n    }\n\n    public Calculation? GetById(string id)\n    {\n        lock (_lock)\n        {\n            return _calculations.FirstOrDefault(c => c.Id == id);\n        }\n    }\n\n    public IReadOnlyList<Calculation> GetAll()\n    {\n        lock (_lock)\n        {\n            return _calculations.ToList();\n        }\n    }\n}\n"
+    },
+    {
+      "path": "entities/Calculation.cs",
+      "content": "namespace Api.Entities;\n\npublic class Calculation\n{\n    public string Id { get; set; } = string.Empty;\n    public decimal FirstNumber { get; set; }\n    public decimal SecondNumber { get; set; }\n    public decimal Result { get; set; }\n    public DateTime CreatedAt { get; set; }\n}\n"
+    }
+  ]
+}

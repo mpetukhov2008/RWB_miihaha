@@ -1,0 +1,1198 @@
+{
+  "entities": [
+    {
+      "name": "User",
+      "description": "Пользователь системы (водитель или администратор).",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Уникальный идентификатор пользователя (UUID)."
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true,
+          "description": "Электронная почта для аутентификации."
+        },
+        {
+          "name": "role",
+          "type": "string",
+          "required": true,
+          "description": "Роль: driver или admin."
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "required": true,
+          "description": "Дата и время создания записи."
+        }
+      ],
+      "indexes": [
+        "idx_user_email",
+        "idx_user_role"
+      ]
+    },
+    {
+      "name": "ParkingZone",
+      "description": "Платная парковочная зона с тарифом.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Уникальный идентификатор зоны (UUID)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Название зоны."
+        },
+        {
+          "name": "polygon",
+          "type": "string",
+          "required": true,
+          "description": "Географический полигон зоны (GeoJSON или WKT)."
+        },
+        {
+          "name": "rate_per_hour",
+          "type": "number",
+          "required": true,
+          "description": "Тариф за час парковки."
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "required": true,
+          "description": "Валюта тарифа (например, RUB)."
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "required": true,
+          "description": "Флаг активности зоны."
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "required": true,
+          "description": "Дата и время создания."
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "required": false,
+          "description": "Дата и время последнего обновления."
+        }
+      ],
+      "indexes": [
+        "idx_zone_name",
+        "idx_zone_is_active"
+      ]
+    },
+    {
+      "name": "ParkingSession",
+      "description": "Парковочная сессия водителя в зоне.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Уникальный идентификатор сессии (UUID)."
+        },
+        {
+          "name": "user_id",
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор водителя."
+        },
+        {
+          "name": "zone_id",
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор зоны."
+        },
+        {
+          "name": "started_at",
+          "type": "datetime",
+          "required": true,
+          "description": "Время начала сессии."
+        },
+        {
+          "name": "ended_at",
+          "type": "datetime",
+          "required": false,
+          "description": "Время окончания сессии (null, если активна)."
+        },
+        {
+          "name": "duration_seconds",
+          "type": "integer",
+          "required": false,
+          "description": "Длительность сессии в секундах (заполняется при завершении)."
+        },
+        {
+          "name": "rate_per_hour",
+          "type": "number",
+          "required": true,
+          "description": "Тариф, зафиксированный на момент начала."
+        },
+        {
+          "name": "amount",
+          "type": "number",
+          "required": false,
+          "description": "Итоговая стоимость (заполняется при завершении)."
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": true,
+          "description": "Статус: active, completed, overdue."
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "required": true,
+          "description": "Дата и время создания записи."
+        }
+      ],
+      "indexes": [
+        "idx_session_user_id",
+        "idx_session_zone_id",
+        "idx_session_status",
+        "idx_session_started_at"
+      ]
+    },
+    {
+      "name": "Payment",
+      "description": "Mock-платёж, связанный с парковочной сессией.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Уникальный идентификатор платежа (UUID)."
+        },
+        {
+          "name": "session_id",
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сессии."
+        },
+        {
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "description": "Сумма платежа."
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": true,
+          "description": "Статус: pending, paid, failed."
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "required": true,
+          "description": "Дата и время создания."
+        },
+        {
+          "name": "paid_at",
+          "type": "datetime",
+          "required": false,
+          "description": "Дата и время оплаты."
+        }
+      ],
+      "indexes": [
+        "idx_payment_session_id",
+        "idx_payment_status"
+      ]
+    },
+    {
+      "name": "Notification",
+      "description": "Уведомление, отправленное водителю.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Уникальный идентификатор уведомления (UUID)."
+        },
+        {
+          "name": "user_id",
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор получателя."
+        },
+        {
+          "name": "session_id",
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор связанной сессии."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "required": true,
+          "description": "Тип: session_started, ending_soon, overdue."
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": true,
+          "description": "Текст уведомления."
+        },
+        {
+          "name": "sent_at",
+          "type": "datetime",
+          "required": true,
+          "description": "Время отправки."
+        },
+        {
+          "name": "read_at",
+          "type": "datetime",
+          "required": false,
+          "description": "Время прочтения (null, если не прочитано)."
+        }
+      ],
+      "indexes": [
+        "idx_notification_user_id",
+        "idx_notification_session_id",
+        "idx_notification_read_at"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "SessionStarted",
+      "version": "1",
+      "payload": {
+        "session_id": "uuid",
+        "user_id": "uuid",
+        "zone_id": "uuid",
+        "zone_name": "string",
+        "started_at": "datetime",
+        "rate_per_hour": 100.0,
+        "currency": "RUB"
+      },
+      "idempotency_key": "session_id",
+      "description": "Событие начала парковочной сессии."
+    },
+    {
+      "name": "SessionEndingSoon",
+      "version": "1",
+      "payload": {
+        "session_id": "uuid",
+        "user_id": "uuid",
+        "zone_id": "uuid",
+        "ends_at": "datetime",
+        "remaining_minutes": 5
+      },
+      "idempotency_key": "session_id:ending_soon",
+      "description": "Событие о скором окончании оплаченного времени (за 5 минут)."
+    },
+    {
+      "name": "SessionOverdue",
+      "version": "1",
+      "payload": {
+        "session_id": "uuid",
+        "user_id": "uuid",
+        "zone_id": "uuid",
+        "overdue_at": "datetime",
+        "amount": 150.0,
+        "currency": "RUB"
+      },
+      "idempotency_key": "session_id:overdue",
+      "description": "Событие о превышении оплаченного времени."
+    },
+    {
+      "name": "SessionCompleted",
+      "version": "1",
+      "payload": {
+        "session_id": "uuid",
+        "user_id": "uuid",
+        "zone_id": "uuid",
+        "started_at": "datetime",
+        "ended_at": "datetime",
+        "duration_seconds": 3600,
+        "amount": 100.0,
+        "currency": "RUB"
+      },
+      "idempotency_key": "session_id",
+      "description": "Событие завершения парковочной сессии."
+    },
+    {
+      "name": "PaymentSettled",
+      "version": "1",
+      "payload": {
+        "payment_id": "uuid",
+        "session_id": "uuid",
+        "amount": 100.0,
+        "currency": "RUB",
+        "status": "paid",
+        "paid_at": "datetime"
+      },
+      "idempotency_key": "payment_id",
+      "description": "Событие фиксации mock-оплаты по факту."
+    },
+    {
+      "name": "ZoneUpdated",
+      "version": "1",
+      "payload": {
+        "zone_id": "uuid",
+        "name": "string",
+        "rate_per_hour": 120.0,
+        "currency": "RUB",
+        "is_active": true,
+        "updated_at": "datetime"
+      },
+      "idempotency_key": "zone_id:updated_at",
+      "description": "Событие изменения зоны или тарифа администратором."
+    }
+  ],
+  "operations": [
+    {
+      "method": "post",
+      "path": "/auth/login",
+      "operationId": "login",
+      "summary": "Аутентификация пользователя (водитель или админ).",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "driver",
+                  "admin"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "errors": [
+        "401",
+        "422"
+      ],
+      "auth": false,
+      "tags": [
+        "auth"
+      ],
+      "requirement_ids": [
+        "NFR-002"
+      ],
+      "error_schema": "ProblemDetails"
+    },
+    {
+      "method": "get",
+      "path": "/zones/nearby",
+      "operationId": "getNearbyZone",
+      "summary": "Определение платной зоны по геолокации водителя.",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "latitude",
+          "longitude"
+        ]
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "in_zone": {
+            "type": "boolean"
+          },
+          "zone": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "rate_per_hour": {
+                "type": "number"
+              },
+              "currency": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "errors": [
+        "401",
+        "422"
+      ],
+      "auth": true,
+      "tags": [
+        "zones"
+      ],
+      "requirement_ids": [
+        "FR-001"
+      ],
+      "error_schema": "ProblemDetails"
+    },
+    {
+      "method": "post",
+      "path": "/sessions",
+      "operationId": "startSession",
+      "summary": "Начало парковочной сессии в платной зоне.",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "zone_id": {
+            "type": "string"
+          },
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "zone_id"
+        ]
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "session": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "zone_id": {
+                "type": "string"
+              },
+              "zone_name": {
+                "type": "string"
+              },
+              "started_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "rate_per_hour": {
+                "type": "number"
+              },
+              "currency": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active"
+                ]
+              }
+            }
+          },
+          "payment": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "errors": [
+        "401",
+        "409",
+        "422"
+      ],
+      "auth": true,
+      "tags": [
+        "sessions"
+      ],
+      "requirement_ids": [
+        "FR-002",
+        "FR-005"
+      ],
+      "error_schema": "ProblemDetails"
+    },
+    {
+      "method": "get",
+      "path": "/sessions/active",
+      "operationId": "getActiveSession",
+      "summary": "Получение активной сессии текущего водителя.",
+      "request_schema": null,
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "session": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "zone_id": {
+                "type": "string"
+              },
+              "zone_name": {
+                "type": "string"
+              },
+              "started_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "rate_per_hour": {
+                "type": "number"
+              },
+              "currency": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active"
+                ]
+              },
+              "current_amount": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "auth": true,
+      "tags": [
+        "sessions"
+      ],
+      "requirement_ids": [
+        "FR-002"
+      ],
+      "error_schema": "ProblemDetails"
+    },
+    {
+      "method": "post",
+      "path": "/sessions/{session_id}/end",
+      "operationId": "endSession",
+      "summary": "Завершение парковочной сессии и пересчёт стоимости.",
+      "request_schema": null,
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "session": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "zone_id": {
+                "type": "string"
+              },
+              "zone_name": {
+                "type": "string"
+              },
+              "started_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "ended_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "duration_seconds": {
+                "type": "integer"
+              },
+              "amount": {
+                "type": "number"
+              },
+              "currency": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "completed"
+                ]
+              }
+            }
+          },
+          "payment": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "paid"
+                ]
+              },
+              "paid_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "errors": [
+        "401",
+        "404",
+        "409"
+      ],
+      "auth": true,
+      "tags": [
+        "sessions"
+      ],
+      "requirement_ids": [
+        "FR-002",
+        "FR-005"
+      ],
+      "error_schema": "ProblemDetails"
+    },
+    {
+      "method": "get",
+      "path": "/sessions",
+      "operationId": "listMySessions",
+      "summary": "История парковочных сессий текущего водителя.",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "default": 20
+          },
+          "offset": {
+            "type": "integer",
+            "default": 0
+          }
+        }
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "zone_id": {
+                  "type": "string"
+                },
+                "zone_name": {
+                  "type": "string"
+                },
+                "started_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "ended_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "duration_seconds": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "amount": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "currency": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "completed",
+                    "overdue"
+                  ]
+                }
+              }
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "auth": true,
+      "tags": [
+        "sessions"
+      ],
+      "requirement_ids": [
+        "FR-004"
+      ],
+      "error_schema": "ProblemDetails"
+    },
+    {
+      "method": "get",
+      "path": "/notifications",
+      "operationId": "listNotifications",
+      "summary": "Список уведомлений текущего водителя.",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "unread_only": {
+            "type": "boolean",
+            "default": false
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20
+          }
+        }
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "session_started",
+                    "ending_soon",
+                    "overdue"
+                  ]
+                },
+                "message": {
+                  "type": "string"
+                },
+                "sent_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "read_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "auth": true,
+      "tags": [
+        "notifications"
+      ],
+      "requirement_ids": [
+        "FR-003"
+      ],
+      "error_schema": "ProblemDetails"
+    },
+    {
+      "method": "post",
+      "path": "/notifications/{notification_id}/read",
+      "operationId": "markNotificationRead",
+      "summary": "Отметить уведомление прочитанным.",
+      "request_schema": null,
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "read_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "errors": [
+        "401",
+        "404"
+      ],
+      "auth": true,
+      "tags": [
+        "notifications"
+      ],
+      "requirement_ids": [
+        "FR-003"
+      ],
+      "error_schema": "ProblemDetails"
+    },
+    {
+      "method": "get",
+      "path": "/admin/zones",
+      "operationId": "adminListZones",
+      "summary": "Список всех парковочных зон (админ).",
+      "request_schema": null,
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "rate_per_hour": {
+                  "type": "number"
+                },
+                "currency": {
+                  "type": "string"
+                },
+                "is_active": {
+                  "type": "boolean"
+                },
+                "updated_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "errors": [
+        "401",
+        "403"
+      ],
+      "auth": true,
+      "tags": [
+        "admin",
+        "zones"
+      ],
+      "requirement_ids": [
+        "FR-006",
+        "NFR-002"
+      ],
+      "error_schema": "ProblemDetails"
+    },
+    {
+      "method": "post",
+      "path": "/admin/zones",
+      "operationId": "adminCreateZone",
+      "summary": "Создание новой парковочной зоны (админ).",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "polygon": {
+            "type": "string"
+          },
+          "rate_per_hour": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string",
+            "default": "RUB"
+          },
+          "is_active": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "polygon",
+          "rate_per_hour"
+        ]
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "rate_per_hour": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "errors": [
+        "401",
+        "403",
+        "422"
+      ],
+      "auth": true,
+      "tags": [
+        "admin",
+        "zones"
+      ],
+      "requirement_ids": [
+        "FR-006",
+        "NFR-002"
+      ],
+      "error_schema": "ProblemDetails"
+    },
+    {
+      "method": "put",
+      "path": "/admin/zones/{zone_id}",
+      "operationId": "adminUpdateZone",
+      "summary": "Редактирование зоны и тарифа (админ).",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "polygon": {
+            "type": "string"
+          },
+          "rate_per_hour": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "rate_per_hour": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "errors": [
+        "401",
+        "403",
+        "404",
+        "422"
+      ],
+      "auth": true,
+      "tags": [
+        "admin",
+        "zones"
+      ],
+      "requirement_ids": [
+        "FR-006",
+        "NFR-002"
+      ],
+      "error_schema": "ProblemDetails"
+    },
+    {
+      "method": "get",
+      "path": "/admin/sessions",
+      "operationId": "adminListSessions",
+      "summary": "Список активных сессий и истории по зоне (админ).",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "zone_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "completed",
+              "overdue"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50
+          },
+          "offset": {
+            "type": "integer",
+            "default": 0
+          }
+        }
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "user_id": {
+                  "type": "string"
+                },
+                "zone_id": {
+                  "type": "string"
+                },
+                "zone_name": {
+                  "type": "string"
+                },
+                "started_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "ended_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "duration_seconds": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "amount": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "currency": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "completed",
+                    "overdue"
+                  ]
+                }
+              }
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        }
+      },
+      "errors": [
+        "401",
+        "403"
+      ],
+      "auth": true,
+      "tags": [
+        "admin",
+        "sessions"
+      ],
+      "requirement_ids": [
+        "FR-006",
+        "NFR-002"
+      ],
+      "error_schema": "ProblemDetails"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "FR-001": {
+    "api": [
+      "getNearbyZone"
+    ],
+    "ui": [
+      "SCR-002"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-002": {
+    "api": [
+      "startSession",
+      "getActiveSession",
+      "endSession"
+    ],
+    "ui": [
+      "SCR-002",
+      "SCR-003",
+      "SCR-004"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-003": {
+    "api": [
+      "listNotifications",
+      "markNotificationRead"
+    ],
+    "ui": [
+      "SCR-006"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-004": {
+    "api": [
+      "listMySessions"
+    ],
+    "ui": [
+      "SCR-005"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-005": {
+    "api": [
+      "startSession",
+      "endSession"
+    ],
+    "ui": [
+      "SCR-003",
+      "SCR-004"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-006": {
+    "api": [
+      "adminListZones",
+      "adminCreateZone",
+      "adminUpdateZone",
+      "adminListSessions"
+    ],
+    "ui": [
+      "SCR-007",
+      "SCR-008",
+      "SCR-009"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "NFR-001": {
+    "api": [],
+    "ui": [],
+    "tests": [],
+    "docs": []
+  },
+  "NFR-002": {
+    "api": [
+      "login",
+      "adminListZones",
+      "adminCreateZone",
+      "adminUpdateZone",
+      "adminListSessions"
+    ],
+    "ui": [
+      "SCR-001",
+      "SCR-007",
+      "SCR-008",
+      "SCR-009"
+    ],
+    "tests": [],
+    "docs": []
+  }
+}

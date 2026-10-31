@@ -16,6 +16,7 @@ from pydantic import BaseModel, ValidationError
 
 from pipeline.agents.prompts import load_prompt
 from pipeline.errors import ValidationFailed
+from pipeline.llm.client import LLMUnavailable
 
 TArtifact = TypeVar("TArtifact", bound=BaseModel | dict[str, Any])
 
@@ -124,6 +125,8 @@ class BaseAgent(ABC, Generic[TArtifact]):
                 return self.validate(data, inputs)
             except ValidationError as exc:
                 last_error = str(exc)
+            except LLMUnavailable as exc:
+                last_error = f"Ответ обрезан/невалиден: {exc}. Верни КОМПАКТНЫЙ JSON: сократи число файлов и длину строк."
         raise ValidationFailed(
             f"Этап {self.name!r}: ответ модели не прошёл валидацию "
             f"за {max_retries + 1} попыток. Последняя ошибка: {last_error}"

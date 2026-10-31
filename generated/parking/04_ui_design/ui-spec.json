@@ -1,0 +1,390 @@
+{
+  "flows": [
+    {
+      "id": "FLOW-001",
+      "name": "Вход и определение зоны",
+      "steps": [
+        "SCR-001",
+        "SCR-002"
+      ]
+    },
+    {
+      "id": "FLOW-002",
+      "name": "Начало и завершение сессии",
+      "steps": [
+        "SCR-002",
+        "SCR-003",
+        "SCR-004"
+      ]
+    },
+    {
+      "id": "FLOW-003",
+      "name": "Просмотр истории и уведомлений",
+      "steps": [
+        "SCR-005",
+        "SCR-006"
+      ]
+    },
+    {
+      "id": "FLOW-004",
+      "name": "Админ: управление зонами",
+      "steps": [
+        "SCR-007",
+        "SCR-008"
+      ]
+    },
+    {
+      "id": "FLOW-005",
+      "name": "Админ: просмотр сессий",
+      "steps": [
+        "SCR-009",
+        "SCR-010"
+      ]
+    }
+  ],
+  "screens": [
+    {
+      "id": "SCR-001",
+      "title": "Вход",
+      "requirement_ids": [
+        "NFR-002"
+      ],
+      "states": {
+        "loading": "Показывается спиннер при отправке формы",
+        "error": "Показывается сообщение об ошибке (неверный email/пароль, 401/400)",
+        "success": "Форма валидна, пользователь аутентифицирован"
+      },
+      "actions": [
+        {
+          "id": "ACT-001",
+          "label": "Войти",
+          "api_operation_id": "login",
+          "navigates_to": "SCR-002"
+        }
+      ]
+    },
+    {
+      "id": "SCR-002",
+      "title": "Текущая зона",
+      "requirement_ids": [
+        "FR-001",
+        "FR-002"
+      ],
+      "states": {
+        "empty": "Вне платной зоны: показывается сообщение «Вне платной зоны»",
+        "loading": "Определение геолокации и зоны",
+        "error": "Ошибка определения геолокации или сети",
+        "forbidden": "Доступ запрещён (401/403)",
+        "success": "Внутри платной зоны: показывается название зоны, тариф и кнопка «Начать сессию»"
+      },
+      "actions": [
+        {
+          "id": "ACT-002",
+          "label": "Обновить зону",
+          "api_operation_id": "getNearbyZone",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-003",
+          "label": "Начать сессию",
+          "api_operation_id": "startSession",
+          "navigates_to": "SCR-003"
+        },
+        {
+          "id": "ACT-004",
+          "label": "История",
+          "api_operation_id": null,
+          "navigates_to": "SCR-005"
+        },
+        {
+          "id": "ACT-005",
+          "label": "Уведомления",
+          "api_operation_id": null,
+          "navigates_to": "SCR-006"
+        }
+      ]
+    },
+    {
+      "id": "SCR-003",
+      "title": "Активная сессия",
+      "requirement_ids": [
+        "FR-002",
+        "FR-003",
+        "FR-005"
+      ],
+      "states": {
+        "loading": "Загрузка данных активной сессии",
+        "error": "Ошибка загрузки сессии",
+        "forbidden": "Доступ запрещён",
+        "success": "Показывается таймер, текущая стоимость, зона, тариф"
+      },
+      "actions": [
+        {
+          "id": "ACT-006",
+          "label": "Завершить сессию",
+          "api_operation_id": "endSession",
+          "navigates_to": "SCR-004"
+        },
+        {
+          "id": "ACT-007",
+          "label": "Обновить сессию",
+          "api_operation_id": "getActiveSession",
+          "navigates_to": null
+        }
+      ]
+    },
+    {
+      "id": "SCR-004",
+      "title": "Итоги сессии",
+      "requirement_ids": [
+        "FR-002",
+        "FR-005"
+      ],
+      "states": {
+        "loading": "Загрузка итогов",
+        "error": "Ошибка получения итогов",
+        "forbidden": "Доступ запрещён",
+        "success": "Показывается длительность, итоговая стоимость, статус оплаты"
+      },
+      "actions": [
+        {
+          "id": "ACT-008",
+          "label": "На главную",
+          "api_operation_id": null,
+          "navigates_to": "SCR-002"
+        },
+        {
+          "id": "ACT-009",
+          "label": "История",
+          "api_operation_id": null,
+          "navigates_to": "SCR-005"
+        }
+      ]
+    },
+    {
+      "id": "SCR-005",
+      "title": "История парковок",
+      "requirement_ids": [
+        "FR-004"
+      ],
+      "states": {
+        "empty": "Нет записей в истории",
+        "loading": "Загрузка истории",
+        "error": "Ошибка загрузки истории",
+        "forbidden": "Доступ запрещён",
+        "success": "Список сессий: дата, зона, длительность, стоимость, статус"
+      },
+      "actions": [
+        {
+          "id": "ACT-010",
+          "label": "Обновить историю",
+          "api_operation_id": "getSessionHistory",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-011",
+          "label": "Назад",
+          "api_operation_id": null,
+          "navigates_to": "SCR-002"
+        }
+      ]
+    },
+    {
+      "id": "SCR-006",
+      "title": "Уведомления",
+      "requirement_ids": [
+        "FR-003"
+      ],
+      "states": {
+        "empty": "Нет уведомлений",
+        "loading": "Загрузка уведомлений",
+        "error": "Ошибка загрузки уведомлений",
+        "forbidden": "Доступ запрещён",
+        "success": "Список уведомлений: тип, сообщение, время"
+      },
+      "actions": [
+        {
+          "id": "ACT-012",
+          "label": "Обновить уведомления",
+          "api_operation_id": "getNotifications",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-013",
+          "label": "Назад",
+          "api_operation_id": null,
+          "navigates_to": "SCR-002"
+        }
+      ]
+    },
+    {
+      "id": "SCR-007",
+      "title": "Админ: список зон",
+      "requirement_ids": [
+        "FR-006"
+      ],
+      "states": {
+        "empty": "Нет зон",
+        "loading": "Загрузка списка зон",
+        "error": "Ошибка загрузки зон",
+        "forbidden": "Доступ запрещён (403)",
+        "success": "Список зон: название, тариф, статус активности"
+      },
+      "actions": [
+        {
+          "id": "ACT-014",
+          "label": "Создать зону",
+          "api_operation_id": null,
+          "navigates_to": "SCR-008"
+        },
+        {
+          "id": "ACT-015",
+          "label": "Редактировать зону",
+          "api_operation_id": "adminUpdateZone",
+          "navigates_to": "SCR-008"
+        },
+        {
+          "id": "ACT-016",
+          "label": "Обновить список",
+          "api_operation_id": "adminListZones",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-017",
+          "label": "Активные сессии",
+          "api_operation_id": null,
+          "navigates_to": "SCR-009"
+        }
+      ]
+    },
+    {
+      "id": "SCR-008",
+      "title": "Админ: форма зоны",
+      "requirement_ids": [
+        "FR-006"
+      ],
+      "states": {
+        "loading": "Сохранение зоны",
+        "error": "Ошибка валидации или сохранения (400/403/404)",
+        "forbidden": "Доступ запрещён",
+        "success": "Форма заполнена, зона готова к сохранению"
+      },
+      "actions": [
+        {
+          "id": "ACT-018",
+          "label": "Создать зону",
+          "api_operation_id": "adminCreateZone",
+          "navigates_to": "SCR-007"
+        },
+        {
+          "id": "ACT-019",
+          "label": "Сохранить изменения",
+          "api_operation_id": "adminUpdateZone",
+          "navigates_to": "SCR-007"
+        },
+        {
+          "id": "ACT-020",
+          "label": "Отмена",
+          "api_operation_id": null,
+          "navigates_to": "SCR-007"
+        }
+      ]
+    },
+    {
+      "id": "SCR-009",
+      "title": "Админ: активные сессии",
+      "requirement_ids": [
+        "FR-006"
+      ],
+      "states": {
+        "empty": "Нет активных сессий",
+        "loading": "Загрузка активных сессий",
+        "error": "Ошибка загрузки сессий",
+        "forbidden": "Доступ запрещён",
+        "success": "Список активных сессий: пользователь, зона, время начала, статус"
+      },
+      "actions": [
+        {
+          "id": "ACT-021",
+          "label": "Обновить список",
+          "api_operation_id": "adminListSessions",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-022",
+          "label": "История по зоне",
+          "api_operation_id": null,
+          "navigates_to": "SCR-010"
+        },
+        {
+          "id": "ACT-023",
+          "label": "Назад",
+          "api_operation_id": null,
+          "navigates_to": "SCR-007"
+        }
+      ]
+    },
+    {
+      "id": "SCR-010",
+      "title": "Админ: история сессий",
+      "requirement_ids": [
+        "FR-006"
+      ],
+      "states": {
+        "empty": "Нет записей в истории",
+        "loading": "Загрузка истории сессий",
+        "error": "Ошибка загрузки истории",
+        "forbidden": "Доступ запрещён",
+        "success": "Список завершённых сессий: пользователь, зона, длительность, стоимость, статус"
+      },
+      "actions": [
+        {
+          "id": "ACT-024",
+          "label": "Обновить историю",
+          "api_operation_id": "adminSessionHistory",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-025",
+          "label": "Назад",
+          "api_operation_id": null,
+          "navigates_to": "SCR-009"
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "SessionTimer",
+      "description": "Компонент отображения таймера активной сессии с текущей стоимостью"
+    },
+    {
+      "name": "ZoneCard",
+      "description": "Карточка платной зоны с названием, тарифом и статусом"
+    },
+    {
+      "name": "SessionListItem",
+      "description": "Элемент списка сессий: дата, зона, длительность, стоимость, статус"
+    },
+    {
+      "name": "NotificationItem",
+      "description": "Элемент списка уведомлений: тип, сообщение, время"
+    },
+    {
+      "name": "AdminZoneForm",
+      "description": "Форма создания/редактирования зоны: название, полигон, тариф, активность"
+    },
+    {
+      "name": "ErrorBanner",
+      "description": "Баннер отображения ошибок API (ProblemDetails)"
+    },
+    {
+      "name": "LoadingSpinner",
+      "description": "Индикатор загрузки данных"
+    },
+    {
+      "name": "EmptyState",
+      "description": "Компонент пустого состояния с иконкой и текстом"
+    }
+  ]
+}

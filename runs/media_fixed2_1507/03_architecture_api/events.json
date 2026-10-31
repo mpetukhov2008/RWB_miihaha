@@ -1,0 +1,87 @@
+[
+  {
+    "name": "ApplicationCreated",
+    "version": "1",
+    "payload": {
+      "application_id": "uuid",
+      "type": "photo|video",
+      "reference_file_id": "uuid",
+      "source_file_id": "uuid",
+      "created_at": "datetime"
+    },
+    "idempotency_key": "application_id",
+    "description": "Создана новая заявка на обработку."
+  },
+  {
+    "name": "PhotoVerificationCompleted",
+    "version": "1",
+    "payload": {
+      "application_id": "uuid",
+      "similarity_score": 0.0,
+      "verification_status": "matches|does_not_match|low_quality",
+      "result_file_id": "uuid",
+      "completed_at": "datetime"
+    },
+    "idempotency_key": "application_id",
+    "description": "Завершена верификация фотографии."
+  },
+  {
+    "name": "VideoDetectionCompleted",
+    "version": "1",
+    "payload": {
+      "application_id": "uuid",
+      "segments": [
+        {
+          "start_time": 0.0,
+          "end_time": 15.0,
+          "confidence": 0.0
+        }
+      ],
+      "completed_at": "datetime"
+    },
+    "idempotency_key": "application_id",
+    "description": "Завершена детекция рекламных роликов в видео."
+  },
+  {
+    "name": "VideoCuttingCompleted",
+    "version": "1",
+    "payload": {
+      "application_id": "uuid",
+      "segments": [
+        {
+          "segment_id": "uuid",
+          "result_file_id": "uuid"
+        }
+      ],
+      "completed_at": "datetime"
+    },
+    "idempotency_key": "application_id",
+    "description": "Завершена нарезка видеофайлов."
+  },
+  {
+    "name": "ApplicationCompleted",
+    "version": "1",
+    "payload": {
+      "application_id": "uuid",
+      "status": "completed",
+      "result_file_ids": [
+        "uuid"
+      ],
+      "completed_at": "datetime"
+    },
+    "idempotency_key": "application_id",
+    "description": "Заявка полностью обработана, результаты сохранены в S3."
+  },
+  {
+    "name": "ApplicationFailed",
+    "version": "1",
+    "payload": {
+      "application_id": "uuid",
+      "status": "failed",
+      "error_message": "string",
+      "failed_at": "datetime"
+    },
+    "idempotency_key": "application_id",
+    "description": "Обработка заявки завершилась ошибкой."
+  }
+]

@@ -1,0 +1,64 @@
+════════════════════════════════════════════════════════════
+  РЕАЛЬНЫЙ ПРОГОН qwen3.8-27b: 9/9 ЭТАПОВ, EXIT 0, 10м15с
+════════════════════════════════════════════════════════════
+
+=== ЭТАПЫ ===
+01_requirements          done     gates={'schema': 'ok', 'unique_ids': 'ok', 'questions_limit': 'ok', 'blocking_limit': 'ok', 'acceptance_criteria': 'ok', 'has_must': 'ok'}
+02_system_analysis       done     gates={'schema': 'ok', 'scenarios_nonempty': 'ok', 'actors_defined': 'ok'}
+03_architecture_api      done     gates={'schema': 'ok', 'operation_ids': 'ok', 'tags_defined': 'ok', 'error_format': 'ok', 'must_coverage': 'fail'}
+04_ui_design             done     gates={'schema': 'ok', 'screens_states': 'ok', 'actions_valid': 'ok', 'screens_nonempty': 'ok'}
+05_codegen_backend       done     gates={'schema': 'ok', 'files_nonempty': 'ok', 'controllers_generated': 'ok'}
+06_codegen_frontend      done     gates={'schema': 'ok', 'files_nonempty': 'ok', 'screens_generated': 'ok'}
+07_tests                 done     gates={'schema': 'ok', 'api_tests_nonempty': 'ok', 'e2e_tests_nonempty': 'ok', 'must_coverage': 'fail'}
+08_security_report       done     gates={'schema': 'ok', 'findings_nonempty': 'ok'}
+09_docs                  done     gates={'schema': 'ok', 'readme_commands': 'fail', 'user_guide_must': 'fail', 'limitations_assumptions': 'fail'}
+
+=== ВЫЗОВЫ LLM (реальные latency) ===
+{"ts": 1793448491.1890361, "stage": "01_requirements", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 4066, "tokens_out": 2288, "latency_ms": 35505, "status": "ok"}
+{"ts": 1793448526.71529, "stage": "01_requirements", "attempt": 2, "model": "qwen3.8-27b", "tokens_in": 4158, "tokens_out": 2292, "latency_ms": 35524, "status": "ok"}
+{"ts": 1793448571.7216134, "stage": "02_system_analysis", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 3870, "tokens_out": 2763, "latency_ms": 45000, "status": "ok"}
+{"ts": 1793448643.9204214, "stage": "03_architecture_api", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 4386, "tokens_out": 4445, "latency_ms": 72190, "status": "ok"}
+{"ts": 1793448709.5204053, "stage": "04_ui_design", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 6218, "tokens_out": 3283, "latency_ms": 65558, "status": "ok"}
+{"ts": 1793448807.0108094, "stage": "05_codegen_backend", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 7974, "tokens_out": 5901, "latency_ms": 97457, "status": "ok"}
+{"ts": 1793448860.2163043, "stage": "06_codegen_frontend", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 3205, "tokens_out": 3302, "latency_ms": 53182, "status": "ok"}
+{"ts": 1793448910.9896894, "stage": "07_tests", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 3048, "tokens_out": 3171, "latency_ms": 50745, "status": "ok"}
+{"ts": 1793448927.706347, "stage": "08_security_report", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 5223, "tokens_out": 992, "latency_ms": 16694, "status": "ok"}
+{"ts": 1793449070.2599227, "stage": "09_docs", "attempt": 2, "model": "qwen3.8-27b", "tokens_in": 2848, "tokens_out": 1057, "latency_ms": 17124, "status": "ok"}
+
+=== ПОПЫТКИ ЭТАПА 6 (retry в действии) ===
+{"ts": 1793448860.2163043, "stage": "06_codegen_frontend", "attempt": 1, "model": "qwen3.8-27b", "tokens_in": 3205, "tokens_out": 3302, "latency_ms": 53182, "status": "ok"}
+
+=== АРТЕФАКТЫ ===
+runs/media_fixed2_1507
+runs/media_fixed2_1507/01_requirements
+runs/media_fixed2_1507/02_system_analysis
+runs/media_fixed2_1507/03_architecture_api
+runs/media_fixed2_1507/04_ui_design
+runs/media_fixed2_1507/05_codegen_backend
+runs/media_fixed2_1507/05_codegen_backend/backend
+runs/media_fixed2_1507/06_codegen_frontend
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin
+runs/media_fixed2_1507/07_tests
+runs/media_fixed2_1507/07_tests/tests
+runs/media_fixed2_1507/08_security_report
+runs/media_fixed2_1507/08_security_report/reports
+runs/media_fixed2_1507/09_docs
+runs/media_fixed2_1507/09_docs/docs
+runs/media_fixed2_1507/cache
+runs/media_fixed2_1507/logs
+runs/media_fixed2_1507/reports
+
+=== FRONTEND-ФАЙЛЫ ===
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/src/app/services/api.service.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/src/app/app.routes.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/src/app/screens/scr-001/scr-001.component.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/src/app/screens/scr-003/scr-003.component.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/src/app/screens/scr-002/scr-002.component.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/app/services/api.service.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/app/app.routes.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/screens/SCR-001/Scr001.component.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/screens/SCR-004/Scr004.component.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/screens/SCR-006/Scr006.component.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/screens/SCR-003/Scr003.component.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/screens/SCR-002/Scr002.component.ts
+runs/media_fixed2_1507/06_codegen_frontend/frontend-admin/screens/SCR-005/Scr005.component.ts

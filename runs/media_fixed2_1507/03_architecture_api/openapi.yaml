@@ -1,0 +1,319 @@
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+  description: Сгенерировано из системной модели
+  license:
+    name: Proprietary
+    url: https://example.com/license
+paths:
+  /applications:
+    post:
+      operationId: createApplication
+      summary: Создать заявку на обработку медиафайла.
+      tags:
+      - applications
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - FR-004
+      responses:
+        '400':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '201': &id001
+          description: Created
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - photo
+                  - video
+                reference_file_id:
+                  type: string
+                source_file_id:
+                  type: string
+              required:
+              - type
+              - reference_file_id
+              - source_file_id
+      security:
+      - bearerAuth: []
+  /applications/{id}:
+    get:
+      operationId: getApplication
+      summary: Получить статус и результаты заявки.
+      tags:
+      - applications
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - FR-004
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '200': &id002
+          description: OK
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Идентификатор ресурса
+        schema:
+          type: string
+  /files/upload-url:
+    post:
+      operationId: getUploadUrl
+      summary: Получить presigned URL для загрузки медиафайла в S3.
+      tags:
+      - files
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - FR-004
+      responses:
+        '400':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '201': *id001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file_type:
+                  type: string
+                  enum:
+                  - jpeg
+                  - png
+                  - mp4
+                file_role:
+                  type: string
+                  enum:
+                  - source
+                  - reference
+                size_bytes:
+                  type: integer
+              required:
+              - file_type
+              - file_role
+              - size_bytes
+      security:
+      - bearerAuth: []
+  /files/{id}/confirm:
+    post:
+      operationId: confirmFileUpload
+      summary: Подтвердить успешную загрузку файла в S3.
+      tags:
+      - files
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - FR-004
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '201': *id001
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Идентификатор ресурса
+        schema:
+          type: string
+  /applications/{id}/process:
+    post:
+      operationId: triggerProcessing
+      summary: Запустить принудительную обработку заявки.
+      tags:
+      - applications
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '201': *id001
+        '202':
+          description: Задача запущена (пример)
+          content:
+            application/json:
+              examples:
+                photo:
+                  summary: Пример ответа для фото
+                  value:
+                    status: processing
+                    type: photo
+                    similarity_percentage: 0
+                    verdict: pending
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Идентификатор ресурса
+        schema:
+          type: string
+  /applications/{id}/segments:
+    get:
+      operationId: getVideoSegments
+      summary: Получить отчет о временных метках обнаруженных роликов.
+      tags:
+      - applications
+      x-requirement-ids:
+      - FR-002
+      - FR-003
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '200': *id002
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Идентификатор ресурса
+        schema:
+          type: string
+  /files/{id}/download-url:
+    get:
+      operationId: getDownloadUrl
+      summary: Получить presigned URL для скачивания итогового файла из S3.
+      tags:
+      - files
+      x-requirement-ids:
+      - FR-004
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '200': *id002
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Идентификатор ресурса
+        schema:
+          type: string
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+servers:
+- url: /
+  description: Base URL

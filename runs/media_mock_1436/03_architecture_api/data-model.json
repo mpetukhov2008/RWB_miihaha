@@ -1,0 +1,108 @@
+[
+  {
+    "name": "ParkingZone",
+    "description": "Платная зона",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": true,
+        "description": "UUID"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "required": true,
+        "description": "Название"
+      },
+      {
+        "name": "tariffPerHour",
+        "type": "number",
+        "required": true,
+        "description": "Тариф"
+      }
+    ],
+    "indexes": [
+      "name"
+    ]
+  },
+  {
+    "name": "Session",
+    "description": "Парковочная сессия",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": true,
+        "description": "UUID"
+      },
+      {
+        "name": "userId",
+        "type": "string",
+        "required": true,
+        "description": "Водитель"
+      },
+      {
+        "name": "zoneId",
+        "type": "string",
+        "required": true,
+        "description": "Зона"
+      },
+      {
+        "name": "startedAt",
+        "type": "datetime",
+        "required": true,
+        "description": "Начало"
+      },
+      {
+        "name": "endedAt",
+        "type": "datetime",
+        "required": false,
+        "description": "Конец"
+      },
+      {
+        "name": "status",
+        "type": "string",
+        "required": true,
+        "description": "active/completed"
+      }
+    ],
+    "indexes": [
+      "userId",
+      "status"
+    ]
+  },
+  {
+    "name": "Payment",
+    "description": "Mock-платёж",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": true,
+        "description": "UUID"
+      },
+      {
+        "name": "sessionId",
+        "type": "string",
+        "required": true,
+        "description": "Сессия"
+      },
+      {
+        "name": "amount",
+        "type": "number",
+        "required": true,
+        "description": "Сумма"
+      },
+      {
+        "name": "status",
+        "type": "string",
+        "required": true,
+        "description": "pending/paid"
+      }
+    ],
+    "indexes": [
+      "sessionId"
+    ]
+  }
+]

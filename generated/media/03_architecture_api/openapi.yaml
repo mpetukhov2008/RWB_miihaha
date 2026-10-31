@@ -1,0 +1,262 @@
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+  description: Сгенерировано из системной модели
+paths:
+  /applications:
+    post:
+      operationId: createApplication
+      summary: Создать заявку на обработку медиафайла.
+      tags:
+      - Applications
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      responses:
+        '400':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - photo
+                  - video
+                reference_template_id:
+                  type: string
+                media_s3_key:
+                  type: string
+              required:
+              - type
+              - reference_template_id
+              - media_s3_key
+      security:
+      - bearerAuth: []
+  /applications/{applicationId}:
+    get:
+      operationId: getApplication
+      summary: Получить статус и результаты заявки.
+      tags:
+      - Applications
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - FR-004
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+  /applications/{applicationId}/process:
+    post:
+      operationId: triggerProcessing
+      summary: Запустить принудительную обработку заявки.
+      tags:
+      - Applications
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+  /applications/{applicationId}/results:
+    get:
+      operationId: getApplicationResults
+      summary: Получить детальные результаты обработки.
+      tags:
+      - Applications
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - FR-004
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+  /reference-templates:
+    post:
+      operationId: uploadReferenceTemplate
+      summary: Загрузить эталонный фотомакет.
+      tags:
+      - ReferenceTemplates
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      responses:
+        '400':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                s3_key:
+                  type: string
+                format:
+                  type: string
+                  enum:
+                  - JPEG
+                  - PNG
+              required:
+              - s3_key
+              - format
+      security:
+      - bearerAuth: []
+  /reference-templates/{templateId}:
+    get:
+      operationId: getReferenceTemplate
+      summary: Получить информацию об эталонном макете.
+      tags:
+      - ReferenceTemplates
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+  /webhooks/status:
+    post:
+      operationId: receiveStatusWebhook
+      summary: Принять уведомление о статусе от смежной системы.
+      tags:
+      - Webhooks
+      x-requirement-ids:
+      - FR-004
+      responses:
+        '400':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                application_id:
+                  type: string
+                status:
+                  type: string
+                result_s3_key:
+                  type: string
+              required:
+              - application_id
+              - status
+      security:
+      - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string

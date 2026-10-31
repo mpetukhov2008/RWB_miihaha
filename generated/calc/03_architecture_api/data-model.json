@@ -1,0 +1,41 @@
+[
+  {
+    "name": "Calculation",
+    "description": "Сущность, представляющая операцию суммирования двух чисел",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": true,
+        "description": "Уникальный идентификатор операции"
+      },
+      {
+        "name": "first_number",
+        "type": "number",
+        "required": true,
+        "description": "Первое число для суммирования"
+      },
+      {
+        "name": "second_number",
+        "type": "number",
+        "required": true,
+        "description": "Второе число для суммирования"
+      },
+      {
+        "name": "result",
+        "type": "number",
+        "required": true,
+        "description": "Результат суммирования"
+      },
+      {
+        "name": "created_at",
+        "type": "datetime",
+        "required": true,
+        "description": "Время создания операции"
+      }
+    ],
+    "indexes": [
+      "id"
+    ]
+  }
+]

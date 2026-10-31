@@ -1,0 +1,52 @@
+{
+  "FR-001": {
+    "api": [
+      "createCalculation"
+    ],
+    "ui": [
+      "SCR-001"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-002": {
+    "api": [
+      "createCalculation"
+    ],
+    "ui": [
+      "SCR-002"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-003": {
+    "api": [
+      "createCalculation"
+    ],
+    "ui": [
+      "SCR-002"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "NFR-001": {
+    "api": [
+      "createCalculation"
+    ],
+    "ui": [
+      "SCR-001"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "NFR-002": {
+    "api": [
+      "createCalculation"
+    ],
+    "ui": [
+      "SCR-001"
+    ],
+    "tests": [],
+    "docs": []
+  }
+}

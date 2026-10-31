@@ -1,0 +1,24 @@
+[
+  {
+    "name": "SessionStarted",
+    "version": "1",
+    "payload": {
+      "sessionId": "string",
+      "zoneId": "string",
+      "startedAt": "datetime"
+    },
+    "idempotency_key": "sessionId",
+    "description": "Сессия начата"
+  },
+  {
+    "name": "SessionCompleted",
+    "version": "1",
+    "payload": {
+      "sessionId": "string",
+      "amount": "number",
+      "endedAt": "datetime"
+    },
+    "idempotency_key": "sessionId",
+    "description": "Сессия завершена"
+  }
+]

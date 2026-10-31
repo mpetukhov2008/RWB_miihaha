@@ -1,0 +1,82 @@
+[
+  {
+    "name": "SessionStarted",
+    "version": "1",
+    "payload": {
+      "session_id": "uuid",
+      "user_id": "uuid",
+      "zone_id": "uuid",
+      "zone_name": "string",
+      "started_at": "datetime",
+      "rate_per_hour": "number"
+    },
+    "idempotency_key": "session_id",
+    "description": "Событие начала парковочной сессии."
+  },
+  {
+    "name": "SessionEndingSoon",
+    "version": "1",
+    "payload": {
+      "session_id": "uuid",
+      "user_id": "uuid",
+      "zone_id": "uuid",
+      "ends_at": "datetime",
+      "remaining_minutes": 5
+    },
+    "idempotency_key": "session_id:ending_soon",
+    "description": "Событие о скором окончании оплаченного времени (за 5 минут)."
+  },
+  {
+    "name": "SessionOverdue",
+    "version": "1",
+    "payload": {
+      "session_id": "uuid",
+      "user_id": "uuid",
+      "zone_id": "uuid",
+      "overdue_at": "datetime",
+      "overdue_minutes": 0
+    },
+    "idempotency_key": "session_id:overdue",
+    "description": "Событие о превышении оплаченного времени."
+  },
+  {
+    "name": "SessionCompleted",
+    "version": "1",
+    "payload": {
+      "session_id": "uuid",
+      "user_id": "uuid",
+      "zone_id": "uuid",
+      "started_at": "datetime",
+      "ended_at": "datetime",
+      "duration_minutes": "integer",
+      "cost": "number"
+    },
+    "idempotency_key": "session_id",
+    "description": "Событие завершения парковочной сессии."
+  },
+  {
+    "name": "PaymentSettled",
+    "version": "1",
+    "payload": {
+      "payment_id": "uuid",
+      "session_id": "uuid",
+      "amount": "number",
+      "status": "paid"
+    },
+    "idempotency_key": "payment_id",
+    "description": "Событие подтверждения mock-оплаты."
+  },
+  {
+    "name": "ZoneUpdated",
+    "version": "1",
+    "payload": {
+      "zone_id": "uuid",
+      "name": "string",
+      "rate_per_hour": "number",
+      "is_active": "boolean",
+      "updated_at": "datetime"
+    },
+    "idempotency_key": "zone_id",
+    "description": "Событие изменения параметров зоны."
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "name": "CalculationCompleted",
+    "version": "1",
+    "payload": {
+      "calculation_id": "string",
+      "first_number": 0,
+      "second_number": 0,
+      "result": 0,
+      "timestamp": "datetime"
+    },
+    "idempotency_key": "calculation_id",
+    "description": "Событие успешного завершения операции суммирования"
+  },
+  {
+    "name": "CalculationFailed",
+    "version": "1",
+    "payload": {
+      "calculation_id": "string",
+      "error_message": "string",
+      "timestamp": "datetime"
+    },
+    "idempotency_key": "calculation_id",
+    "description": "Событие ошибки при обработке операции суммирования"
+  }
+]

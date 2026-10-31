@@ -1,0 +1,36 @@
+{
+  "api_tests": [
+    {
+      "name": "Старт сессии",
+      "method": "post",
+      "path": "/sessions",
+      "cases": [
+        {
+          "title": "Успешный старт",
+          "expected_status": 201,
+          "payload": {
+            "zoneId": "z1"
+          }
+        },
+        {
+          "title": "Неверная зона",
+          "expected_status": 404,
+          "payload": {
+            "zoneId": "z2"
+          }
+        }
+      ]
+    }
+  ],
+  "e2e_tests": [
+    {
+      "name": "Начало и завершение сессии",
+      "scenario_id": "US-001",
+      "steps": [
+        "Открыть карту",
+        "Нажать «Начать»",
+        "Завершить"
+      ]
+    }
+  ]
+}

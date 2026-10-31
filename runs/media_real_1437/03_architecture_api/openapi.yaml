@@ -1,0 +1,264 @@
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+  description: Сгенерировано из системной модели
+paths:
+  /applications:
+    post:
+      operationId: createApplication
+      summary: Создать заявку на обработку медиафайла (фото или видео).
+      tags:
+      - Applications
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - FR-004
+      responses:
+        '400':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - photo
+                  - video
+                  description: Тип заявки.
+                reference_file_id:
+                  type: string
+                  description: Идентификатор эталонного макета.
+                source_file_id:
+                  type: string
+                  description: Идентификатор исходного медиафайла.
+              required:
+              - type
+              - reference_file_id
+              - source_file_id
+      security:
+      - bearerAuth: []
+  /applications/{id}:
+    get:
+      operationId: getApplication
+      summary: Получить статус и детали заявки.
+      tags:
+      - Applications
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - FR-004
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+  /applications/{id}/photo-result:
+    get:
+      operationId: getPhotoAnalysisResult
+      summary: Получить результат анализа фотографии.
+      tags:
+      - Applications
+      - PhotoAnalysis
+      x-requirement-ids:
+      - FR-001
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+  /applications/{id}/video-result:
+    get:
+      operationId: getVideoAnalysisResult
+      summary: Получить результат анализа видеопотока с временными метками.
+      tags:
+      - Applications
+      - VideoAnalysis
+      x-requirement-ids:
+      - FR-002
+      - FR-003
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+  /applications/{id}/process:
+    post:
+      operationId: triggerProcessing
+      summary: Принудительно запустить обработку заявки.
+      tags:
+      - Applications
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - FR-004
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+  /files/upload-url:
+    post:
+      operationId: getUploadUrl
+      summary: Получить pre-signed URL для загрузки медиафайла в S3.
+      tags:
+      - Files
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - FR-004
+      responses:
+        '400':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mime_type:
+                  type: string
+                  description: Тип MIME файла.
+                size_bytes:
+                  type: integer
+                  description: Размер файла в байтах.
+                is_reference:
+                  type: boolean
+                  description: Является ли файл эталонным макетом.
+              required:
+              - mime_type
+              - size_bytes
+      security:
+      - bearerAuth: []
+  /files/{id}/confirm-upload:
+    post:
+      operationId: confirmFileUpload
+      summary: Подтвердить успешную загрузку файла в S3.
+      tags:
+      - Files
+      x-requirement-ids:
+      - FR-001
+      - FR-002
+      - FR-003
+      - FR-004
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string

@@ -1,0 +1,28 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "content": "# Result\n\n## Install\n`pip install -e .`\n\n## Run\n`./run_pipeline.sh cases/parking/requirements.md`\n\n## Test\n`pytest -q`\n"
+    },
+    {
+      "path": "docs/user-guide.md",
+      "content": "# User Guide\n\nFR-001: определение зоны.\nFR-002: активная сессия.\nFR-003: уведомления.\nFR-004: история.\nFR-005: оплата.\nFR-006: админ-панель.\nNFR-002: безопасность.\n"
+    },
+    {
+      "path": "docs/known-limitations.md",
+      "content": "# Known Limitations\n\nВодитель даёт согласие на геолокацию.\nОдна активная сессия на водителя.\nТарифы задаются админом вручную.\nВерсия Angular зафиксирована как 20.1.6.\n"
+    },
+    {
+      "path": "docs/run-instructions.md",
+      "content": "# Run Instructions\n\ndocker compose -f infra/docker-compose.yml up --build\n"
+    },
+    {
+      "path": "docs/dev-guide.md",
+      "content": "# Dev Guide\n\nАрхитектура: см. docs/pipeline-architecture.md.\n"
+    },
+    {
+      "path": "docs/product-description.md",
+      "content": "# Product Description\n\nСервис платных парковок (MVP).\n"
+    }
+  ]
+}

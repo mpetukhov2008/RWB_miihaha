@@ -1,0 +1,450 @@
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+  description: Сгенерировано из системной модели
+paths:
+  /auth/login:
+    post:
+      operationId: login
+      summary: Аутентификация пользователя (водитель или админ).
+      tags:
+      - auth
+      x-requirement-ids:
+      - NFR-002
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+              - email
+              - password
+  /zones/nearby:
+    get:
+      operationId: getNearbyZone
+      summary: Определение платной зоны по геолокации водителя.
+      tags:
+      - zones
+      x-requirement-ids:
+      - FR-001
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+              required:
+              - latitude
+              - longitude
+      security:
+      - bearerAuth: []
+  /sessions:
+    post:
+      operationId: startSession
+      summary: Начало парковочной сессии в платной зоне.
+      tags:
+      - sessions
+      x-requirement-ids:
+      - FR-002
+      - FR-005
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zone_id:
+                  type: string
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+              required:
+              - zone_id
+      security:
+      - bearerAuth: []
+    get:
+      operationId: listMySessions
+      summary: История парковочных сессий текущего водителя.
+      tags:
+      - sessions
+      x-requirement-ids:
+      - FR-004
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: integer
+                  default: 20
+                offset:
+                  type: integer
+                  default: 0
+      security:
+      - bearerAuth: []
+  /sessions/active:
+    get:
+      operationId: getActiveSession
+      summary: Получение активной сессии текущего водителя.
+      tags:
+      - sessions
+      x-requirement-ids:
+      - FR-002
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+  /sessions/{session_id}/end:
+    post:
+      operationId: endSession
+      summary: Завершение парковочной сессии и пересчёт стоимости.
+      tags:
+      - sessions
+      x-requirement-ids:
+      - FR-002
+      - FR-005
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+  /notifications:
+    get:
+      operationId: listNotifications
+      summary: Список уведомлений текущего водителя.
+      tags:
+      - notifications
+      x-requirement-ids:
+      - FR-003
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                unread_only:
+                  type: boolean
+                  default: false
+                limit:
+                  type: integer
+                  default: 20
+      security:
+      - bearerAuth: []
+  /notifications/{notification_id}/read:
+    post:
+      operationId: markNotificationRead
+      summary: Отметить уведомление прочитанным.
+      tags:
+      - notifications
+      x-requirement-ids:
+      - FR-003
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+  /admin/zones:
+    get:
+      operationId: adminListZones
+      summary: Список всех парковочных зон (админ).
+      tags:
+      - admin
+      - zones
+      x-requirement-ids:
+      - FR-006
+      - NFR-002
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - bearerAuth: []
+    post:
+      operationId: adminCreateZone
+      summary: Создание новой парковочной зоны (админ).
+      tags:
+      - admin
+      - zones
+      x-requirement-ids:
+      - FR-006
+      - NFR-002
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                polygon:
+                  type: string
+                rate_per_hour:
+                  type: number
+                currency:
+                  type: string
+                  default: RUB
+                is_active:
+                  type: boolean
+                  default: true
+              required:
+              - name
+              - polygon
+              - rate_per_hour
+      security:
+      - bearerAuth: []
+  /admin/zones/{zone_id}:
+    put:
+      operationId: adminUpdateZone
+      summary: Редактирование зоны и тарифа (админ).
+      tags:
+      - admin
+      - zones
+      x-requirement-ids:
+      - FR-006
+      - NFR-002
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                polygon:
+                  type: string
+                rate_per_hour:
+                  type: number
+                currency:
+                  type: string
+                is_active:
+                  type: boolean
+      security:
+      - bearerAuth: []
+  /admin/sessions:
+    get:
+      operationId: adminListSessions
+      summary: Список активных сессий и истории по зоне (админ).
+      tags:
+      - admin
+      - sessions
+      x-requirement-ids:
+      - FR-006
+      - NFR-002
+      responses:
+        '401':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: Ошибка
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zone_id:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - completed
+                  - overdue
+                limit:
+                  type: integer
+                  default: 50
+                offset:
+                  type: integer
+                  default: 0
+      security:
+      - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string

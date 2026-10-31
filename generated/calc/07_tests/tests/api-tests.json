@@ -1,0 +1,55 @@
+[
+  {
+    "name": "POST /api/sum",
+    "method": "POST",
+    "path": "/api/sum",
+    "cases": [
+      {
+        "title": "Happy path: сумма двух целых чисел (2 + 3 = 5)",
+        "expected_status": 200,
+        "payload": {
+          "a": 2,
+          "b": 3
+        }
+      },
+      {
+        "title": "Happy path: сумма отрицательного и положительного числа (-1 + 1 = 0)",
+        "expected_status": 200,
+        "payload": {
+          "a": -1,
+          "b": 1
+        }
+      },
+      {
+        "title": "Happy path: сумма двух дробных чисел (1.5 + 2.5 = 4.0)",
+        "expected_status": 200,
+        "payload": {
+          "a": 1.5,
+          "b": 2.5
+        }
+      },
+      {
+        "title": "Ошибка: некорректный ввод (не число)",
+        "expected_status": 400,
+        "payload": {
+          "a": "abc",
+          "b": 3
+        }
+      },
+      {
+        "title": "Ошибка: отсутствует первое число",
+        "expected_status": 400,
+        "payload": {
+          "b": 3
+        }
+      },
+      {
+        "title": "Ошибка: отсутствует второе число",
+        "expected_status": 400,
+        "payload": {
+          "a": 2
+        }
+      }
+    ]
+  }
+]

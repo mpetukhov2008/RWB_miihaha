@@ -1,0 +1,112 @@
+{
+  "run_id": "media_mock_1436",
+  "stages": {
+    "01_requirements": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:36:38.973446+00:00",
+      "gates": {
+        "schema": "ok",
+        "unique_ids": "ok",
+        "questions_limit": "ok",
+        "blocking_limit": "ok",
+        "acceptance_criteria": "ok",
+        "has_must": "ok"
+      },
+      "finished_at": "2026-10-31T11:36:38.981170+00:00"
+    },
+    "02_system_analysis": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:36:38.981388+00:00",
+      "gates": {
+        "schema": "ok",
+        "scenarios_nonempty": "ok",
+        "actors_defined": "ok"
+      },
+      "finished_at": "2026-10-31T11:36:38.986400+00:00"
+    },
+    "03_architecture_api": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:36:38.986550+00:00",
+      "gates": {
+        "schema": "ok",
+        "operation_ids": "ok",
+        "tags_defined": "ok",
+        "error_format": "ok",
+        "must_coverage": "fail"
+      },
+      "finished_at": "2026-10-31T11:36:38.998966+00:00"
+    },
+    "04_ui_design": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:36:38.999107+00:00",
+      "gates": {
+        "schema": "ok",
+        "screens_states": "ok",
+        "actions_valid": "ok",
+        "screens_nonempty": "ok"
+      },
+      "finished_at": "2026-10-31T11:36:39.017839+00:00"
+    },
+    "05_codegen_backend": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:36:39.018045+00:00",
+      "gates": {
+        "schema": "ok",
+        "files_nonempty": "ok",
+        "controllers_generated": "ok"
+      },
+      "finished_at": "2026-10-31T11:36:39.032080+00:00"
+    },
+    "06_codegen_frontend": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:36:39.032258+00:00",
+      "gates": {
+        "schema": "ok",
+        "files_nonempty": "ok",
+        "screens_generated": "fail"
+      },
+      "finished_at": "2026-10-31T11:36:39.045692+00:00"
+    },
+    "07_tests": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:36:39.045899+00:00",
+      "gates": {
+        "schema": "ok",
+        "api_tests_nonempty": "ok",
+        "e2e_tests_nonempty": "ok",
+        "must_coverage": "fail"
+      },
+      "finished_at": "2026-10-31T11:36:39.062187+00:00"
+    },
+    "08_security_report": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:36:39.062373+00:00",
+      "gates": {
+        "schema": "ok",
+        "findings_nonempty": "ok"
+      },
+      "finished_at": "2026-10-31T11:36:39.075438+00:00"
+    },
+    "09_docs": {
+      "status": "done",
+      "prompt_version": "v1",
+      "started_at": "2026-10-31T11:36:39.075648+00:00",
+      "gates": {
+        "schema": "ok",
+        "readme_commands": "ok",
+        "user_guide_must": "ok",
+        "limitations_assumptions": "fail"
+      },
+      "finished_at": "2026-10-31T11:36:39.089810+00:00"
+    }
+  },
+  "created_at": "2026-10-31T11:36:38.973149+00:00"
+}

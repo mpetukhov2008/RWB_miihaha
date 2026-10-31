@@ -1,0 +1,332 @@
+{
+  "flows": [
+    {
+      "id": "FLOW-001",
+      "name": "Вход водителя и определение зоны",
+      "steps": [
+        "SCR-001",
+        "SCR-002"
+      ]
+    },
+    {
+      "id": "FLOW-002",
+      "name": "Начало и завершение парковочной сессии",
+      "steps": [
+        "SCR-002",
+        "SCR-003",
+        "SCR-004"
+      ]
+    },
+    {
+      "id": "FLOW-003",
+      "name": "Просмотр истории парковок",
+      "steps": [
+        "SCR-005"
+      ]
+    },
+    {
+      "id": "FLOW-004",
+      "name": "Просмотр уведомлений",
+      "steps": [
+        "SCR-006"
+      ]
+    },
+    {
+      "id": "FLOW-005",
+      "name": "Вход администратора и управление зонами",
+      "steps": [
+        "SCR-001",
+        "SCR-007",
+        "SCR-008"
+      ]
+    },
+    {
+      "id": "FLOW-006",
+      "name": "Просмотр сессий администратором",
+      "steps": [
+        "SCR-007",
+        "SCR-009"
+      ]
+    }
+  ],
+  "screens": [
+    {
+      "id": "SCR-001",
+      "title": "Вход в систему",
+      "requirement_ids": [
+        "NFR-002"
+      ],
+      "states": {
+        "loading": "Показывается спиннер при отправке формы",
+        "error": "Показывается сообщение об ошибке при неверных данных (401/422)",
+        "success": "Пользователь перенаправляется на главный экран по роли"
+      },
+      "actions": [
+        {
+          "id": "ACT-001",
+          "label": "Войти",
+          "api_operation_id": "login",
+          "navigates_to": null
+        }
+      ]
+    },
+    {
+      "id": "SCR-002",
+      "title": "Главный экран водителя (определение зоны)",
+      "requirement_ids": [
+        "FR-001",
+        "FR-002"
+      ],
+      "states": {
+        "empty": "Показывается сообщение «Вне платной зоны»",
+        "loading": "Показывается спиннер при определении геолокации",
+        "error": "Показывается сообщение об ошибке геолокации или API",
+        "success": "Показывается название зоны, тариф и кнопка «Начать сессию»"
+      },
+      "actions": [
+        {
+          "id": "ACT-002",
+          "label": "Определить зону",
+          "api_operation_id": "getNearbyZone",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-003",
+          "label": "Начать сессию",
+          "api_operation_id": "startSession",
+          "navigates_to": "SCR-003"
+        },
+        {
+          "id": "ACT-004",
+          "label": "История",
+          "api_operation_id": null,
+          "navigates_to": "SCR-005"
+        },
+        {
+          "id": "ACT-005",
+          "label": "Уведомления",
+          "api_operation_id": null,
+          "navigates_to": "SCR-006"
+        }
+      ]
+    },
+    {
+      "id": "SCR-003",
+      "title": "Активная сессия",
+      "requirement_ids": [
+        "FR-002",
+        "FR-005"
+      ],
+      "states": {
+        "loading": "Показывается спиннер при загрузке данных активной сессии",
+        "error": "Показывается сообщение об ошибке при недоступности сессии",
+        "success": "Показывается таймер, текущая стоимость, зона и кнопка «Завершить сессию»"
+      },
+      "actions": [
+        {
+          "id": "ACT-006",
+          "label": "Загрузить активную сессию",
+          "api_operation_id": "getActiveSession",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-007",
+          "label": "Завершить сессию",
+          "api_operation_id": "endSession",
+          "navigates_to": "SCR-004"
+        }
+      ]
+    },
+    {
+      "id": "SCR-004",
+      "title": "Итоги завершённой сессии",
+      "requirement_ids": [
+        "FR-002",
+        "FR-005"
+      ],
+      "states": {
+        "success": "Показывается время начала/окончания, длительность, итоговая стоимость и статус оплаты"
+      },
+      "actions": [
+        {
+          "id": "ACT-008",
+          "label": "На главный экран",
+          "api_operation_id": null,
+          "navigates_to": "SCR-002"
+        },
+        {
+          "id": "ACT-009",
+          "label": "В историю",
+          "api_operation_id": null,
+          "navigates_to": "SCR-005"
+        }
+      ]
+    },
+    {
+      "id": "SCR-005",
+      "title": "История парковок",
+      "requirement_ids": [
+        "FR-004"
+      ],
+      "states": {
+        "empty": "Показывается сообщение «Парковок пока нет»",
+        "loading": "Показывается спиннер при загрузке списка",
+        "error": "Показывается сообщение об ошибке загрузки",
+        "success": "Показывается список сессий: дата, зона, длительность, стоимость, статус"
+      },
+      "actions": [
+        {
+          "id": "ACT-010",
+          "label": "Загрузить историю",
+          "api_operation_id": "listMySessions",
+          "navigates_to": null
+        }
+      ]
+    },
+    {
+      "id": "SCR-006",
+      "title": "Уведомления",
+      "requirement_ids": [
+        "FR-003"
+      ],
+      "states": {
+        "empty": "Показывается сообщение «Уведомлений нет»",
+        "loading": "Показывается спиннер при загрузке списка",
+        "error": "Показывается сообщение об ошибке загрузки",
+        "success": "Показывается список уведомлений с типом, текстом и временем"
+      },
+      "actions": [
+        {
+          "id": "ACT-011",
+          "label": "Загрузить уведомления",
+          "api_operation_id": "listNotifications",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-012",
+          "label": "Отметить прочитанным",
+          "api_operation_id": "markNotificationRead",
+          "navigates_to": null
+        }
+      ]
+    },
+    {
+      "id": "SCR-007",
+      "title": "Главный экран администратора",
+      "requirement_ids": [
+        "FR-006",
+        "NFR-002"
+      ],
+      "states": {
+        "forbidden": "Показывается сообщение «Доступ запрещён» для не-админа",
+        "success": "Показывается навигация: Зоны, Сессии"
+      },
+      "actions": [
+        {
+          "id": "ACT-013",
+          "label": "К зонам",
+          "api_operation_id": null,
+          "navigates_to": "SCR-008"
+        },
+        {
+          "id": "ACT-014",
+          "label": "К сессиям",
+          "api_operation_id": null,
+          "navigates_to": "SCR-009"
+        }
+      ]
+    },
+    {
+      "id": "SCR-008",
+      "title": "Управление зонами (админ)",
+      "requirement_ids": [
+        "FR-006",
+        "NFR-002"
+      ],
+      "states": {
+        "empty": "Показывается сообщение «Зон пока нет»",
+        "loading": "Показывается спиннер при загрузке списка зон",
+        "error": "Показывается сообщение об ошибке",
+        "forbidden": "Показывается сообщение «Доступ запрещён»",
+        "success": "Показывается список зон с тарифами и кнопками редактирования"
+      },
+      "actions": [
+        {
+          "id": "ACT-015",
+          "label": "Загрузить зоны",
+          "api_operation_id": "adminListZones",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-016",
+          "label": "Создать зону",
+          "api_operation_id": "adminCreateZone",
+          "navigates_to": null
+        },
+        {
+          "id": "ACT-017",
+          "label": "Редактировать зону",
+          "api_operation_id": "adminUpdateZone",
+          "navigates_to": null
+        }
+      ]
+    },
+    {
+      "id": "SCR-009",
+      "title": "Сессии (админ)",
+      "requirement_ids": [
+        "FR-006",
+        "NFR-002"
+      ],
+      "states": {
+        "empty": "Показывается сообщение «Сессий нет»",
+        "loading": "Показывается спиннер при загрузке списка",
+        "error": "Показывается сообщение об ошибке",
+        "forbidden": "Показывается сообщение «Доступ запрещён»",
+        "success": "Показывается список сессий с фильтрами по зоне и статусу"
+      },
+      "actions": [
+        {
+          "id": "ACT-018",
+          "label": "Загрузить сессии",
+          "api_operation_id": "adminListSessions",
+          "navigates_to": null
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "SessionTimer",
+      "description": "Компонент отображения таймера активной сессии с текущей стоимостью"
+    },
+    {
+      "name": "ZoneCard",
+      "description": "Карточка зоны с названием, тарифом и статусом"
+    },
+    {
+      "name": "SessionListItem",
+      "description": "Элемент списка сессий: дата, зона, длительность, стоимость, статус"
+    },
+    {
+      "name": "NotificationItem",
+      "description": "Элемент списка уведомлений с типом, текстом и временем"
+    },
+    {
+      "name": "StatusBadge",
+      "description": "Бейдж статуса сессии (active/completed/overdue)"
+    },
+    {
+      "name": "ErrorBanner",
+      "description": "Баннер отображения ошибок API"
+    },
+    {
+      "name": "LoadingSpinner",
+      "description": "Индикатор загрузки"
+    },
+    {
+      "name": "EmptyState",
+      "description": "Компонент пустого состояния с иконкой и текстом"
+    }
+  ]
+}

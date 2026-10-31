@@ -1,0 +1,92 @@
+{
+  "FR-001": {
+    "api": [
+      "createApplication",
+      "getApplication",
+      "getUploadUrl",
+      "confirmFileUpload",
+      "triggerProcessing"
+    ],
+    "ui": [
+      "SCR-001",
+      "SCR-002",
+      "SCR-003",
+      "SCR-004"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-002": {
+    "api": [
+      "createApplication",
+      "getApplication",
+      "getUploadUrl",
+      "confirmFileUpload",
+      "triggerProcessing",
+      "getVideoSegments"
+    ],
+    "ui": [
+      "SCR-001",
+      "SCR-002",
+      "SCR-003",
+      "SCR-005"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-003": {
+    "api": [
+      "createApplication",
+      "getApplication",
+      "getUploadUrl",
+      "confirmFileUpload",
+      "triggerProcessing",
+      "getVideoSegments"
+    ],
+    "ui": [
+      "SCR-002",
+      "SCR-003",
+      "SCR-005"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "FR-004": {
+    "api": [
+      "createApplication",
+      "getApplication",
+      "getUploadUrl",
+      "confirmFileUpload",
+      "getDownloadUrl"
+    ],
+    "ui": [
+      "SCR-002",
+      "SCR-003",
+      "SCR-004",
+      "SCR-005",
+      "SCR-006"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "NFR-001": {
+    "api": [],
+    "ui": [
+      "SCR-003"
+    ],
+    "tests": [],
+    "docs": []
+  },
+  "NFR-002": {
+    "api": [],
+    "ui": [],
+    "tests": [],
+    "docs": []
+  },
+  "NFR-003": {
+    "api": [],
+    "ui": [],
+    "tests": [],
+    "docs": []
+  }
+}
