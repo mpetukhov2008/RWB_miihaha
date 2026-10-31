@@ -12,6 +12,7 @@ from typing import Any
 
 from pipeline.agents.base import AgentResult, BaseAgent
 from pipeline.generators.backend import build_backend_skeleton
+from pipeline.generators.migrations import build_migrations
 
 _CODEGEN_RULES = """
 ## Жёсткие правила генерации
@@ -90,6 +91,7 @@ class CodegenBackendAgent(BaseAgent[dict[str, Any]]):
         ops = arch.get("operations") or []
         entities = arch.get("entities") or []
         skeleton = build_backend_skeleton(openapi, ops, entities)
+        skeleton.update(build_migrations({"entities": entities}))
 
         # Слияние с нормализацией регистра: один тип — один файл.
         files: dict[str, str] = {}
