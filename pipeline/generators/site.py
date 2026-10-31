@@ -97,15 +97,25 @@ def _nav(case_name: str) -> str:
 
 
 def _requirements_page(run_dir: Path, case_name: str) -> str:
-    req = _read_json(run_dir / "01_requirements" / "requirements.json") or {}
+    raw = _read_json(run_dir / "01_requirements" / "requirements.json")
+    # requirements.json бывает двух форматов: {"requirements": [...]} или
+    # список. Нормализуем к списку.
+    if isinstance(raw, dict):
+        items = raw.get("requirements") or []
+    elif isinstance(raw, list):
+        items = raw
+    else:
+        items = []
     rows = []
-    for r in req.get("requirements") or []:
+    for r in items:
+        if not isinstance(r, dict):
+            continue
         rows.append(
             f"<tr><td><code>{_esc(r.get('id', ''))}</code></td>"
             f"<td>{_esc(r.get('title', ''))}</td>"
             f"<td>{_esc(r.get('priority', ''))}</td></tr>"
         )
-    body = f"<h2>Функциональные требования</h2>"
+    body = "<h2>Функциональные требования</h2>"
     if rows:
         body += '<table><tr><th>ID</th><th>Название</th><th>Приоритет</th></tr>' + "".join(rows) + "</table>"
     else:
@@ -144,9 +154,19 @@ def _api_page(run_dir: Path, case_name: str) -> str:
 
 
 def _data_model_page(run_dir: Path, case_name: str) -> str:
-    model = _read_json(run_dir / "03_architecture_api" / "data-model.json") or {}
+    raw = _read_json(run_dir / "03_architecture_api" / "data-model.json")
+    # data-model.json бывает двух форматов: список сущностей или
+    # {"entities": [...]}. Нормализуем к списку.
+    if isinstance(raw, dict):
+        entities = raw.get("entities") or []
+    elif isinstance(raw, list):
+        entities = raw
+    else:
+        entities = []
     sections = []
-    for ent in model.get("entities") or []:
+    for ent in entities:
+        if not isinstance(ent, dict):
+            continue
         rows = "".join(
             f"<tr><td><code>{_esc(f.get('name', ''))}</code></td>"
             f"<td>{_esc(f.get('type', ''))}</td>"
@@ -155,7 +175,7 @@ def _data_model_page(run_dir: Path, case_name: str) -> str:
         )
         sections.append(
             f"<h3>{_esc(ent.get('name', ''))}</h3>"
-            f"<table><tr><th>Поле</th><th>Тип</th><th>Обязательное</th></tr>{rows}</table>"
+            + (f"<table><tr><th>Поле</th><th>Тип</th><th>Обязательное</th></tr>{rows}</table>" if rows else "")
         )
     body = "<h2>Модель данных</h2>" + ("".join(sections) or "<p>Модель пуста.</p>")
     return _page(f"{case_name} — Модель данных", _nav(case_name), body)
@@ -165,7 +185,13 @@ def _ui_page(run_dir: Path, case_name: str) -> str:
     ui = _read_json(run_dir / "04_ui_design" / "ui-spec.json") or {}
     cards = []
     for s in ui.get("screens") or []:
-        actions = ", ".join(_esc(a.get("label", "")) for a in s.get("actions") or [])
+        if not isinstance(s, dict):
+            continue
+        actions = ", ".join(
+            _esc(a.get("label", ""))
+            for a in (s.get("actions") or [])
+            if isinstance(a, dict)
+        )
         cards.append(
             f"<h3>{_esc(s.get('id', ''))}: {_esc(s.get('title', ''))}</h3>"
             f"<p>Действия: {actions or '—'}</p>"
@@ -176,13 +202,16 @@ def _ui_page(run_dir: Path, case_name: str) -> str:
 
 def _traceability_page(run_dir: Path, case_name: str) -> str:
     trace = _read_json(run_dir / "reports" / "traceability.json") or {}
-    rows = "".join(
-        f"<tr><td><code>{_esc(rid)}</code></td>"
-        f"<td>{_esc(', '.join(row.get('api') or []) or '—')}</td>"
-        f"<td>{_esc(', '.join(row.get('ui') or []) or '—')}</td>"
-        f"<td>{_esc(', '.join(row.get('tests') or []) or '—')}</td></tr>"
-        for rid, row in trace.items()
-    )
+    rows = ""
+    if isinstance(trace, dict):
+        rows = "".join(
+            f"<tr><td><code>{_esc(rid)}</code></td>"
+            f"<td>{_esc(', '.join(row.get('api') or []) or '—')}</td>"
+            f"<td>{_esc(', '.join(row.get('ui') or []) or '—')}</td>"
+            f"<td>{_esc(', '.join(row.get('tests') or []) or '—')}</td></tr>"
+            for rid, row in trace.items()
+            if isinstance(row, dict)
+        )
     body = "<h2>Матрица трассируемости</h2>"
     if rows:
         body += (
